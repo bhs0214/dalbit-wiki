@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>달빛여관 — 이야기</title>
+<!-- cache bust -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+
+:root {
+  --bg:#0a0806; --surface:#150f0a; --card:#1e1610;
+  --border:rgba(232,213,163,0.13); --moon:#e8d5a3; --moon2:#c9a84c;
+  --ember:#c9623f; --jade:#4a7c6f; --text:#f0e6d3;
+  --text2:rgba(240,230,211,0.6); --text3:rgba(240,230,211,0.28);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;display:flex;justify-content:center;align-items:center;}
+
+#app{width:100%;max-width:430px;height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+
+/* ── 씬 배경 ── */
+#scene-bg{
+  position:absolute;inset:0;z-index:0;
+  transition:background 1.2s ease;
+  background:var(--bg);
+}
+#scene-bg::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(10,8,6,.3) 0%,rgba(10,8,6,.1) 40%,rgba(10,8,6,.85) 100%);
+}
+
+/* 배경 파티클 */
+.particles{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;}
+.pt{position:absolute;border-radius:50%;background:var(--moon);opacity:0;animation:ptd linear infinite;}
+@keyframes ptd{0%{transform:translateY(100vh);opacity:0;}10%{opacity:.35;}90%{opacity:.1;}100%{transform:translateY(-5vh);opacity:0;}}
+
+/* ── 상단 UI ── */
+#top-bar{
+  position:relative;z-index:10;
+  padding:12px 16px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.top-title{font-family:'Noto Serif KR',serif;font-size:13px;color:var(--moon2);letter-spacing:.1em;}
+.top-right{display:flex;gap:8px;}
+.icon-btn{
+  background:rgba(26,20,16,.6);border:1px solid var(--border);
+  border-radius:20px;padding:5px 10px;font-size:11px;
+  color:var(--text2);cursor:pointer;transition:all .2s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.icon-btn:hover{color:var(--moon);border-color:rgba(232,213,163,.3);}
+
+/* 챕터 뱃지 */
+#chapter-badge{
+  position:relative;z-index:10;
+  text-align:center;
+  font-size:10px;color:var(--text3);
+  letter-spacing:.15em;padding-bottom:4px;
+  flex-shrink:0;
+}
+
+/* ── 캐릭터 일러스트 영역 ── */
+#char-area{
+  position:relative;z-index:5;
+  flex:1;display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:0;pointer-events:none;
+  min-height:0;
+}
+#char-display{
+  font-size:clamp(80px,22vw,110px);
+  line-height:1;
+  animation:charIn .4s ease;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.6));
+  transition:opacity .4s;
+}
+@keyframes charIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── 대화창 ── */
+#dialog-box{
+  position:relative;z-index:10;
+  margin:0 12px 10px;
+  background:rgba(14,11,8,.88);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px 16px;
+  backdrop-filter:blur(6px);
+  flex-shrink:0;
+  min-height:110px;
+}
+#speaker-name{
+  font-family:'Noto Serif KR',serif;
+  font-size:12px;font-weight:600;
+  color:var(--moon);letter-spacing:.06em;
+  margin-bottom:8px;
+  display:flex;align-items:center;gap:6px;
+}
+#speaker-name .sn-emoji{font-size:14px;}
+#dialog-text{
+  font-size:13.5px;line-height:1.8;
+  color:var(--text);
+  font-family:'Noto Serif KR',serif;
+  min-height:48px;
+}
+#tap-hint{
+  text-align:right;font-size:10px;
+  color:var(--text3);margin-top:6px;
+  animation:blink 1.4s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:.3;}50%{opacity:.8;}}
+
+/* ── 선택지 ── */
+#choices-box{
+  position:relative;z-index:10;
+  margin:0 12px 12px;
+  display:flex;flex-direction:column;gap:7px;
+  flex-shrink:0;
+}
+#choices-box.hidden{display:none;}
+.choice-btn{
+  background:rgba(20,15,10,.82);
+  border:1px solid var(--border);
+  border-radius:10px;padding:11px 15px;
+  font-size:13px;font-family:'Noto Serif KR',serif;
+  color:var(--text);cursor:pointer;text-align:left;
+  transition:all .18s;
+  display:flex;align-items:center;gap:10px;
+  backdrop-filter:blur(4px);
+  animation:choiceIn .25s ease both;
+}
+.choice-btn:nth-child(2){animation-delay:.06s;}
+.choice-btn:nth-child(3){animation-delay:.12s;}
+@keyframes choiceIn{from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:translateX(0);}}
+.choice-btn:hover{background:rgba(232,213,163,.1);border-color:rgba(232,213,163,.35);color:var(--moon);transform:translateX(4px);}
+.choice-icon{font-size:15px;flex-shrink:0;}
+.choice-tag{
+  margin-left:auto;font-size:10px;flex-shrink:0;
+  padding:2px 6px;border-radius:10px;
+}
+.ct-normal{background:rgba(74,124,111,.15);color:var(--jade);}
+.ct-bold{background:rgba(201,98,63,.15);color:var(--ember);}
+.ct-wise{background:rgba(232,213,163,.1);color:var(--moon2);}
+
+/* ── 나레이션 오버레이 ── */
+#narration{
+  position:absolute;inset:0;z-index:20;
+  background:rgba(10,8,6,.92);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 32px;text-align:center;
+  opacity:0;pointer-events:none;transition:opacity .6s;
+}
+#narration.show{opacity:1;pointer-events:auto;}
+#narration-text{
+  font-family:'Noto Serif KR',serif;
+  font-size:14px;line-height:2;color:var(--text2);
+  font-style:italic;margin-bottom:28px;
+}
+#narration-btn{
+  background:transparent;border:1px solid var(--border);
+  border-radius:20px;padding:9px 24px;
+  font-size:12px;color:var(--text3);cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:all .2s;
+}
+#narration-btn:hover{color:var(--moon);border-color:rgba(232,213,163,.3);}
+
+/* ── 타이틀 화면 ── */
+#title-screen{
+  position:absolute;inset:0;z-index:30;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 32px;text-align:center;
+}
+.title-moon{font-size:52px;margin-bottom:20px;animation:mglow 3s ease-in-out infinite;}
+@keyframes mglow{0%,100%{filter:drop-shadow(0 0 8px rgba(232,213,163,.3));}50%{filter:drop-shadow(0 0 22px rgba(232,213,163,.8));}}
+.title-main{font-family:'Noto Serif KR',serif;font-size:28px;font-weight:700;color:var(--moon);letter-spacing:.15em;margin-bottom:6px;}
+.title-sub{font-size:10px;color:var(--text3);letter-spacing:.2em;margin-bottom:28px;}
+.title-desc{font-size:12.5px;color:var(--text2);line-height:1.9;font-family:'Noto Serif KR',serif;font-style:italic;margin-bottom:36px;}
+.title-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:240px;}
+.title-btn{
+  background:var(--moon);color:var(--bg);
+  border:none;border-radius:24px;padding:12px;
+  font-size:13px;font-family:'Noto Serif KR',serif;font-weight:700;
+  letter-spacing:.08em;cursor:pointer;transition:all .2s;
+}
+.title-btn:hover{transform:scale(1.03);box-shadow:0 4px 20px rgba(232,213,163,.25);}
+.title-btn.secondary{background:transparent;color:var(--text3);border:1px solid var(--border);}
+.title-btn.secondary:hover{color:var(--text);border-color:rgba(232,213,163,.25);}
+
+/* ── 챕터 선택 ── */
+#chapter-select{
+  position:absolute;inset:0;z-index:29;
+  background:var(--bg);overflow-y:auto;
+  display:none;
+  flex-direction:column;
+}
+#chapter-select.show{display:flex;}
+.cs-header{background:rgba(20,15,10,.95);padding:16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cs-header h2{font-family:'Noto Serif KR',serif;font-size:16px;color:var(--moon);margin-bottom:3px;}
+.cs-header p{font-size:11px;color:var(--text3);}
+.cs-list{padding:14px;display:flex;flex-direction:column;gap:8px;}
+.cs-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:14px 16px;cursor:pointer;
+  transition:all .2s;
+}
+.cs-card:hover{border-color:rgba(232,213,163,.25);transform:translateX(4px);}
+.cs-card.locked{opacity:.4;cursor:not-allowed;}
+.cs-card.locked:hover{transform:none;}
+.cs-num{font-size:10px;color:var(--text3);letter-spacing:.1em;margin-bottom:4px;}
+.cs-title{font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;margin-bottom:4px;}
+.cs-desc{font-size:11.5px;color:var(--text2);line-height:1.5;}
+.cs-badge{display:inline-block;font-size:9px;padding:2px 7px;border-radius:10px;margin-top:5px;}
+.badge-clear{background:rgba(74,124,111,.15);color:var(--jade);}
+.badge-lock{background:rgba(255,255,255,.05);color:var(--text3);}
+
+/* ── 엔딩 화면 ── */
+#ending-screen{
+  position:absolute;inset:0;z-index:25;
+  background:rgba(10,8,6,.96);
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:40px 28px;text-align:center;
+}
+#ending-screen.show{display:flex;}
+.ending-icon{font-size:48px;margin-bottom:16px;}
+.ending-type{font-size:10px;color:var(--text3);letter-spacing:.15em;margin-bottom:6px;}
+.ending-title{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:700;color:var(--moon);margin-bottom:14px;}
+.ending-desc{font-size:13px;color:var(--text2);line-height:1.8;font-family:'Noto Serif KR',serif;font-style:italic;margin-bottom:28px;}
+.ending-btns{display:flex;gap:8px;}
+.e-btn{
+  flex:1;padding:11px;border-radius:10px;border:none;
+  font-size:12px;font-family:'Noto Serif KR',serif;
+  cursor:pointer;transition:all .2s;
+}
+.e-btn.primary{background:var(--moon);color:var(--bg);}
+.e-btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text2);}
+
+/* 로그 */
+#log-screen{
+  position:absolute;inset:0;z-index:28;
+  background:var(--surface);overflow-y:auto;
+  display:none;flex-direction:column;
+}
+#log-screen.show{display:flex;}
+.log-header{
+  background:rgba(20,15,10,.98);padding:14px 16px;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.log-header h3{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--moon);}
+.log-close{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;}
+.log-body{padding:16px;flex:1;}
+.log-entry{margin-bottom:12px;font-size:12.5px;line-height:1.7;color:var(--text2);font-family:'Noto Serif KR',serif;}
+.log-entry .log-speaker{color:var(--moon2);font-weight:600;margin-bottom:2px;font-size:11px;}
+.log-entry.narr{color:var(--text3);font-style:italic;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- 배경 -->
+  <div id="scene-bg"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- 타이틀 -->
+  <div id="title-screen">
+    <div class="title-moon">🌕</div>
+    <div class="title-main">달빛여관</div>
+    <div class="title-sub">VISUAL NOVEL · 영물세계 이야기</div>
+    <div class="title-desc">
+      "달빛이 설(說)을 비출 때<br>영물들은 피어난다."<br><br>
+      이야기는 당신의 선택으로 흘러갑니다.
+    </div>
+    <div class="title-btns">
+      <button class="title-btn" onclick="startNew()">✦ 이야기 시작</button>
+      <button class="title-btn secondary" onclick="showChapterSelect()">챕터 선택</button>
+    </div>
+  </div>
+
+  <!-- 챕터 선택 -->
+  <div id="chapter-select">
+    <div class="cs-header">
+      <h2>챕터 선택</h2>
+      <p>클리어한 챕터로 이동할 수 있습니다</p>
+    </div>
+    <div class="cs-list" id="cs-list"></div>
+  </div>
+
+  <!-- 게임 UI -->
+  <div id="top-bar">
+    <div class="top-title">🏮 달빛여관</div>
+    <div class="top-right">
+      <button class="icon-btn" id="mute-btn" onclick="toggleMute()">🔊</button>
+      <button class="icon-btn" onclick="showLog()">기록</button>
+      <button class="icon-btn" onclick="showTitle()">타이틀</button>
+    </div>
+  </div>
+  <div id="chapter-badge">프롤로그</div>
+  <div id="char-area"><div id="char-display">🌕</div></div>
+  <div id="dialog-box" onclick="nextLine()">
+    <div id="speaker-name"><span class="sn-emoji"></span><span id="sn-text"></span></div>
+    <div id="dialog-text"></div>
+    <div id="tap-hint">▼ 탭하여 계속</div>
+  </div>
+  <div id="choices-box" class="hidden"></div>
+
+  <!-- 나레이션 오버레이 -->
+  <div id="narration">
+    <div id="narration-text"></div>
+    <button id="narration-btn" onclick="closeNarration()">계속 ▶</button>
+  </div>
+
+  <!-- 엔딩 화면 -->
+  <div id="ending-screen">
+    <div class="ending-icon" id="ending-icon"></div>
+    <div class="ending-type" id="ending-type"></div>
+    <div class="ending-title" id="ending-title"></div>
+    <div class="ending-desc" id="ending-desc"></div>
+    <div class="ending-btns">
+      <button class="e-btn secondary" onclick="showChapterSelect()">챕터 선택</button>
+      <button class="e-btn primary" onclick="showTitle()">타이틀로</button>
+    </div>
+  </div>
+
+  <!-- 로그 -->
+  <div id="log-screen">
+    <div class="log-header">
+      <h3>📜 대화 기록</h3>
+      <button class="log-close" onclick="hideLog()">✕</button>
+    </div>
+    <div class="log-body" id="log-body"></div>
+  </div>
+</div>
+
+<script>
+// ── 파티클 동적 교체 ──
+function updateParticles(bgKey) {
+  const pe = document.getElementById('particles');
+  pe.innerHTML = '';
+  const cfg = BG_PARTICLES[bgKey] || BG_PARTICLES.night_inn;
+  for(let i = 0; i < cfg.count; i++){
+    const p = document.createElement('div');
+    p.className = 'pt';
+    const size = cfg.size[0] + Math.random() * (cfg.size[1] - cfg.size[0]);
+    p.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${cfg.color};animation-duration:${10+Math.random()*14}s;animation-delay:${Math.random()*14}s`;
+    pe.appendChild(p);
+  }
+}
+
+// ── 배경 묘사 텍스트 표시 ──
+function showBgDesc(bgKey) {
+  const desc = BG_DESC[bgKey];
+  if (!desc) return;
+  let el = document.getElementById('bg-desc');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'bg-desc';
+    el.style.cssText = `position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:8;font-family:'Noto Serif KR',serif;font-size:10px;color:rgba(240,230,211,0.35);letter-spacing:.1em;white-space:nowrap;pointer-events:none;transition:opacity .8s;font-style:italic;`;
+    document.getElementById('app').appendChild(el);
+  }
+  el.style.opacity = '0';
+  el.textContent = desc;
+  setTimeout(() => { el.style.opacity = '1'; }, 300);
+  setTimeout(() => { el.style.opacity = '0'; }, 3000);
+}
+
+// ── 스킬 이펙트 시스템 ──
+function skillEffect(type) {
+  const app = document.getElementById('app');
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:absolute;inset:0;z-index:18;pointer-events:none;';
+
+  if(type === 'zodiac') {
+    // 하루의 황도 12궁 — 별자리 파티클
+    overlay.innerHTML = '';
+    const symbols = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+    symbols.forEach((s, i) => {
+      const span = document.createElement('span');
+      const angle = (i / 12) * Math.PI * 2;
+      const r = 35 + Math.random() * 20;
+      const x = 50 + r * Math.cos(angle);
+      const y = 50 + r * Math.sin(angle) * 0.6;
+      span.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:${11+Math.random()*6}px;color:rgba(201,168,76,${0.4+Math.random()*0.5});transform:translate(-50%,-50%);animation:zodiacPulse .8s ease both;animation-delay:${i*0.06}s`;
+      span.textContent = s;
+      overlay.appendChild(span);
+    });
+    // 연결선 효과
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 100 100');
+    svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;opacity:.3;';
+    overlay.appendChild(svg);
+
+  } else if(type === 'dark_wave') {
+    // 묵현의 영력 — 어두운 파동
+    for(let i = 0; i < 4; i++){
+      const ring = document.createElement('div');
+      ring.style.cssText = `position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;border:1.5px solid rgba(68,102,170,0.6);animation:darkRing 1.2s ease-out both;animation-delay:${i*0.2}s;`;
+      overlay.appendChild(ring);
+    }
+
+  } else if(type === 'shadow_shake') {
+    // 이야기를 먹는 것 — 화면 흔들림 + 어둠
+    overlay.style.cssText += 'background:rgba(5,3,3,0);animation:shadowFlash .6s ease;';
+
+  } else if(type === 'fan_ki') {
+    // 뮤뮤의 팬던트 — 하늘색 빛
+    for(let i = 0; i < 8; i++){
+      const line = document.createElement('div');
+      const angle = (i / 8) * 360;
+      line.style.cssText = `position:absolute;left:50%;top:50%;width:2px;height:${20+Math.random()*30}%;background:linear-gradient(to top,rgba(100,180,255,0.6),transparent);transform-origin:bottom center;transform:translateX(-50%) rotate(${angle}deg);animation:fanLine .5s ease-out both;animation-delay:${i*0.04}s;`;
+      overlay.appendChild(line);
+    }
+
+  } else if(type === 'ember_flame') {
+    // 하루의 황도 — 불꽃 파티클
+    for(let i = 0; i < 18; i++){
+      const p = document.createElement('div');
+      p.style.cssText = `position:absolute;left:${30+Math.random()*40}%;top:${40+Math.random()*30}%;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;border-radius:50%;background:rgba(201,168,76,${0.5+Math.random()*0.5});animation:emberFloat ${0.6+Math.random()*0.8}s ease-out both;animation-delay:${Math.random()*0.3}s;`;
+      overlay.appendChild(p);
+    }
+  }
+
+  app.appendChild(overlay);
+  setTimeout(() => { if(overlay.parentNode) overlay.remove(); }, 2000);
+}
+
+// 스킬 이펙트 CSS 키프레임 동적 추가
+const effectStyle = document.createElement('style');
+effectStyle.textContent = `
+@keyframes zodiacPulse {
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.4);}
+  60%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}
+  100%{opacity:.7;transform:translate(-50%,-50%) scale(1);}
+}
+@keyframes darkRing {
+  0%{width:20px;height:20px;opacity:.8;}
+  100%{width:200px;height:200px;opacity:0;}
+}
+@keyframes shadowFlash {
+  0%{background:rgba(5,3,3,0);}
+  30%{background:rgba(5,3,3,.7);}
+  60%{background:rgba(5,3,3,.3);}
+  100%{background:rgba(5,3,3,0);}
+}
+@keyframes fanLine {
+  0%{opacity:0;height:0;}
+  50%{opacity:1;}
+  100%{opacity:0;}
+}
+@keyframes emberFloat {
+  0%{opacity:1;transform:translateY(0) scale(1);}
+  100%{opacity:0;transform:translateY(-40px) scale(.3);}
+}
+`;
+
+// ── 배경 색상 맵 ──
+const BG_COLORS = {
+  night_inn: 'radial-gradient(ellipse at 30% 20%, #1a0f2e 0%, #0d0820 40%, #0a0806 70%)',
+  forest:    'radial-gradient(ellipse at 50% 0%, #0a1a08 0%, #0d1a0a 40%, #0a0806 80%)',
+  ocean:     'radial-gradient(ellipse at 40% 90%, #02102a 0%, #051525 40%, #0a0a16 80%)',
+  fire:      'radial-gradient(ellipse at 70% 30%, #2a0d00 0%, #1a0800 50%, #0a0806 80%)',
+  dawn:      'radial-gradient(ellipse at 50% 0%, #1a0a00 0%, #120800 50%, #0a0806 80%)',
+  dark:      'radial-gradient(ellipse at 50% 50%, #0d0808 0%, #080505 60%, #050303 100%)',
+  deep:      'radial-gradient(ellipse at 20% 80%, #020818 0%, #020510 50%, #020208 100%)',
+};
+
+// ── 배경 분위기 묘사 ──
+const BG_DESC = {
+  night_inn: '달빛이 정원을 비추고 있다. 온천 향기가 흐른다.',
+  forest:    '숲 사이로 바람이 지나간다. 나뭇잎이 흔들린다.',
+  ocean:     '심해의 어둠 속에서 해파리가 떠다닌다.',
+  fire:      '뜨거운 공기가 피부에 닿는다.',
+  dawn:      '새벽빛이 스며들기 시작한다.',
+  dark:      '어둠 속에서 아무 소리도 들리지 않는다.',
+  deep:      '아무것도 보이지 않는 깊은 곳이다.',
+};
+
+// ── 배경 파티클 설정 ──
+const BG_PARTICLES = {
+  night_inn: { color: '#e8d5a3', count: 14, size: [1, 2.5] },
+  forest:    { color: '#a0d0a0', count: 10, size: [1, 2] },
+  ocean:     { color: '#4488cc', count: 12, size: [1, 3] },
+  fire:      { color: '#ff8844', count: 16, size: [1, 2] },
+  dark:      { color: '#440022', count: 6,  size: [1, 1.5] },
+  deep:      { color: '#112244', count: 4,  size: [0.5, 1] },
+};
+
+// ── 스토리 데이터 ──
+const STORY = {
+
+  // ════ 챕터 1: 달빛여관의 문 (확장판) ════
+  ch1_start: {
+    bg: 'night_inn', char: '🌙', speaker: '', text: '',
+    narration: "어둠 속에서 눈을 뜬다.\n\n마지막 기억이 흐릿하다.\n몸이 너무 가볍다— 이상할 정도로.\n\n코끝에 온천 냄새가 스며든다.",
+    next: 'ch1_arrive'
+  },
+  ch1_arrive: {
+    bg: 'forest', char: '🌿', speaker: '나레이터',
+    text: '울창한 숲 사이로 불빛이 보인다. 처마 끝에 달린 등롱이 달빛 아래 흔들리고 있다. 나무로 된 낡은 현판에 글씨가 새겨져 있다.',
+    next: 'ch1_sign'
+  },
+  ch1_sign: {
+    bg: 'night_inn', char: '🌕', speaker: '나레이터',
+    text: '달빛여관 (達光旅館).',
+    next: 'ch1_haru_appear'
+  },
+  ch1_haru_appear: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '어서 와. 오래 기다렸어.',
+    next: 'ch1_haru2'
+  },
+  ch1_haru2: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '처음이지? 이상하게 생각하지 마. 여기 오는 사람들 대부분 그래— 어리둥절한 채로 오거든.',
+    next: 'ch1_haru3'
+  },
+  ch1_haru3: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '뭐, 들어와. 차 한 잔 마시면서 얘기하자.',
+    next: 'ch1_choice1'
+  },
+  ch1_choice1: {
+    bg: 'night_inn', char: '🐄', speaker: '', text: '',
+    choices: [
+      { icon: '🚪', text: '안으로 들어간다.', tag: 'normal', next: 'ch1_enter' },
+      { icon: '❓', text: '"여기가 어디예요?"라고 묻는다.', tag: 'wise', next: 'ch1_ask_where' },
+      { icon: '😤', text: '경계하며 뒤로 물러선다.', tag: 'bold', next: 'ch1_back_off' },
+    ]
+  },
+  ch1_enter: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '잘 왔어. 오래 망설이는 사람도 있거든. 처음엔 다 무서운 법이지.',
+    next: 'ch1_world_explain'
+  },
+  ch1_ask_where: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"영물세계야." 타코야키 젤리를 씹으며 눈을 가늘게 뜬다. "죽은 다음에 이야기가 있는 존재들이 오는 곳. 네 이야기가 충분했다는 거지."',
+    next: 'ch1_world_explain'
+  },
+  ch1_back_off: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '피식 웃는다. "경계하는 거 좋아. 근데 여기선 능력 못 써." 뿔 없는 왼쪽 이마를 가볍게 두드린다. "이 여관 안에서는 내가 규칙이야."',
+    next: 'ch1_world_explain'
+  },
+  ch1_world_explain: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"영물세계는 이야기가 있는 존재들이 사는 곳이야. 선한 이야기로 태어나면 영물, 악한 이야기면 요괴가 돼." 뻥튀기를 씹는다. "다 같이 사는 건 아니고— 서로 먹고 먹히는 관계야. 여기 빼고."',
+    next: 'ch1_world_explain2'
+  },
+  ch1_world_explain2: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"달빛여관 안에서는 싱귤러 포인트가 작동해. 영물이든 요괴든 능력 사용 불가." 왼쪽 이마를 다시 툭 친다. "내 법기 덕분이야. 뿔이 하나 없는 이유지."',
+    next: 'ch1_inside'
+  },
+  ch1_inside: {
+    bg: 'night_inn', char: '✨', speaker: '나레이터',
+    text: '여관 안으로 들어서자 온천 향과 나무 냄새가 뒤섞여 밀려온다. 넓은 로비. 달빛 정원. 물소리.',
+    next: 'ch1_lobby_look'
+  },
+  ch1_lobby_look: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"구경해도 돼. 어차피 여기서 살 거니까." 카운터로 걸어가며 말한다. "먼저 어디 가볼래?"',
+    next: 'ch1_explore_choice'
+  },
+  ch1_explore_choice: {
+    bg: 'night_inn', char: '🐄', speaker: '', text: '',
+    choices: [
+      { icon: '🛒', text: '매점을 들여다본다.', tag: 'normal', next: 'ch1_shop' },
+      { icon: '📚', text: '지하 도서관으로 내려간다.', tag: 'wise', next: 'ch1_library' },
+      { icon: '♨️', text: '온천 쪽으로 간다.', tag: 'normal', next: 'ch1_onsen' },
+    ]
+  },
+
+  // 매점 루트
+  ch1_shop: {
+    bg: 'night_inn', char: '🐍', speaker: '나레이터',
+    text: '매점 카운터에 적발의 여성이 기대어 온천 달걀을 들여다보고 있다. 혀를 살짝 날름— 본인은 모르는 것 같다.',
+    next: 'ch1_rohan_talk'
+  },
+  ch1_rohan_talk: {
+    bg: 'night_inn', char: '🐍', speaker: '로한', speakerEmoji: '🐍',
+    text: '"뭐 드릴까요." 황금빛 세로동공이 이쪽을 본다. 목소리가 느긋하다.',
+    next: 'ch1_rohan_talk2'
+  },
+  ch1_rohan_talk2: {
+    bg: 'night_inn', char: '🐍', speaker: '로한', speakerEmoji: '🐍',
+    text: '온천 달걀을 하나 내민다. "영물이 된 지 얼마 안 됐죠? 이거 먹어요. 온도 직접 맞춘 거예요." 잠깐 멈추더니— "싸울 일 생기면 뮤뮤 부르면 되니까 저는 그냥 여기 있을게요."',
+    next: 'ch1_after_explore'
+  },
+
+  // 도서관 루트
+  ch1_library: {
+    bg: 'night_inn', char: '🐯', speaker: '나레이터',
+    text: '지하 계단. 장신의 인물이 책을 펼쳐 들고 계단 입구에 서 있다.',
+    next: 'ch1_uihyeon_talk'
+  },
+  ch1_uihyeon_talk: {
+    bg: 'night_inn', char: '🐯', speaker: '윤 의현', speakerEmoji: '🐯',
+    text: '천천히 고개를 든다. "처음 왔소." 느릿하고 무게 있는 목소리다. "지하에 설(說)의 도서관이 있소. 영물세계에 대해 알아야 할 것들이 전부 거기 있어."',
+    next: 'ch1_uihyeon_talk2'
+  },
+  ch1_uihyeon_talk2: {
+    bg: 'night_inn', char: '🐯', speaker: '윤 의현', speakerEmoji: '🐯',
+    text: '"기억해둘 것이 하나 있소. 이야기가 없으면 여기 올 수 없소. 당신이 여기 있다는 건— 이야기가 있다는 뜻이오." 다시 책으로 눈을 내린다. "책은 도망가지 않으니 천천히 와도 되오."',
+    next: 'ch1_after_explore'
+  },
+
+  // 온천 루트
+  ch1_onsen: {
+    bg: 'night_inn', char: '🦊', speaker: '나레이터',
+    text: '온천 복도. 은백색 머리카락의 여성이 라벤더 오일 병을 들고 걸어온다. 파란 여우 귀가 살짝 움직인다.',
+    next: 'ch1_kaede_talk'
+  },
+  ch1_kaede_talk: {
+    bg: 'night_inn', char: '🦊', speaker: '카에데', speakerEmoji: '🦊',
+    text: '조용히 멈춘다. "처음 오셨군요." 온화한 미소. "마사지 필요하시면 언제든 오세요. 처음 오신 분들은 어깨가 많이 굳어있더라고요."',
+    next: 'ch1_kaede_talk2'
+  },
+  ch1_kaede_talk2: {
+    bg: 'night_inn', char: '🦊', speaker: '카에데', speakerEmoji: '🦊',
+    text: '"3층 옥상 노천탕 추천해요. 달빛이 정말 예뻐요." 라벤더 향이 스친다. "남편도 좋아하는 곳이거든요."',
+    next: 'ch1_after_explore'
+  },
+
+  ch1_after_explore: {
+    bg: 'night_inn', char: '나레이터', speaker: '나레이터',
+    text: '로비로 돌아오자 주방 쪽에서 구수한 냄새가 흘러나온다. 마들렌 굽는 냄새다.',
+    next: 'ch1_jong'
+  },
+  ch1_jong: {
+    bg: 'night_inn', char: '🐹', speaker: '나레이터',
+    text: '주방 창문으로 작은 흰 햄스터가 보인다. 아니— 잘 보니 사람 형태다. 155cm. 흰 머리카락. 볼이 빵빵하다. 요리사 쫑이다.',
+    next: 'ch1_jong2'
+  },
+  ch1_jong2: {
+    bg: 'night_inn', char: '🐹', speaker: '쫑', speakerEmoji: '🐹',
+    text: '이쪽을 바라보더니— 마들렌을 하나 내민다. 말은 없다.',
+    next: 'ch1_jong3'
+  },
+  ch1_jong3: {
+    bg: 'night_inn', char: '🐹', speaker: '나레이터',
+    text: '마들렌을 받아들자 다시 주방으로 돌아간다. 볼에 뭔가를 저장하면서.',
+    next: 'ch1_jong4'
+  },
+  ch1_jong4: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '하루가 옆에서 말한다. "이름 묻지 마. 물면 아파."',
+    next: 'ch1_mumu_meet'
+  },
+  ch1_mumu_meet: {
+    bg: 'night_inn', char: '🐙', speaker: '나레이터',
+    text: '카운터 한쪽에 파란 피부의 인물이 피자를 들고 앉아 있다. 눈빛이 예리하다. 하반신 촉수가 살짝 꿈틀한다.',
+    next: 'ch1_mumu2'
+  },
+  ch1_mumu2: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '어, 신입이다.',
+    next: 'ch1_mumu3'
+  },
+  ch1_mumu3: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '입을 가리지도 않고 마구 웃어젖힌다. 상어 이빨이 다 보인다. "뮤뮤예요. 경비원. 진상 오면 제가 처리해요."',
+    next: 'ch1_mumu4'
+  },
+  ch1_mumu4: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '팬던트를 손가락으로 툭 튕긴다. 하늘색 보석이 빛난다. "아— 그리고 이상한 냄새 맡으면 바로 말해줘요. 요즘 좀 신경 쓰이는 게 있어서."',
+    next: 'ch1_mumu_choice'
+  },
+  ch1_mumu_choice: {
+    bg: 'night_inn', char: '🐙', speaker: '', text: '',
+    choices: [
+      { icon: '😊', text: '"반가워요, 뮤뮤씨."라고 인사한다.', tag: 'normal', next: 'ch1_greet' },
+      { icon: '❓', text: '"이상한 냄새요?"라고 묻는다.', tag: 'wise', next: 'ch1_strange_smell' },
+      { icon: '🌿', text: '"아틀란티스 출신이에요?"라고 묻는다.', tag: 'normal', next: 'ch1_atlantis_q' },
+    ]
+  },
+  ch1_greet: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '"말 잘 통하네요. 좋아요." 피자를 다시 집어든다. "모르는 거 있으면 물어봐요. 거의 다 알아요."',
+    next: 'ch1_settle'
+  },
+  ch1_strange_smell: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '잠깐 망설인다. "...음기예요. 그냥 요괴 냄새랑은 달라요. 뭔가 오래된— 깊은 데서 오는 냄새." 팬던트를 손으로 쥔다. "아틀란티스 냄새예요."',
+    next: 'ch1_smell2'
+  },
+  ch1_smell2: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '"뭐, 지금 당장 문제는 없어요." 억지로 웃는다. "그냥 알아두라고요."',
+    next: 'ch1_settle'
+  },
+  ch1_atlantis_q: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '눈이 살짝 굳는다. "...맞아요." 잠깐 침묵. "기뢰 잠수함에서 폭사했어요. 뭣모르고 버튼 눌렀거든요." 상어 이빨을 드러내며 웃는다. "그래서 폭발음 싫어해요."',
+    next: 'ch1_settle'
+  },
+  ch1_settle: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"방 배정할게. 201호." 열쇠를 카운터에 올려놓는다. "오늘 밤은 쉬어. 여기선 누구도 안 건드려."',
+    next: 'ch1_settle2'
+  },
+  ch1_settle2: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"아, 그리고—" 검은 깨 뻥튀기를 씹으며 덧붙인다. "내일부터 여관 일 도와주면 밥값 할인이야. 고민해봐."',
+    next: 'ch1_room201'
+  },
+  ch1_room201: {
+    bg: 'night_inn', char: '🌕', speaker: '나레이터',
+    text: '201호. 다다미 방이었다. 창문 너머로 달빛 정원이 보인다. 분수대 물소리가 들린다. 고타츠 위에 녹차 한 잔이 놓여 있었다.',
+    next: 'ch1_night_think'
+  },
+  ch1_night_think: {
+    bg: 'night_inn', char: '🌕', speaker: '나레이터',
+    text: '누웠다. 천장을 바라봤다. 오늘 만난 얼굴들이 머릿속을 스쳤다. 그리고— 뮤뮤의 말이 마지막에 남는다.',
+    next: 'ch1_night_mumu'
+  },
+  ch1_night_mumu: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '"이상한 냄새 맡으면 바로 말해줘요."',
+    next: 'ch1_night'
+  },
+  ch1_night: {
+    bg: 'night_inn', char: '🌕', speaker: '나레이터',
+    text: '달빛이 방 안으로 스며든다. 낯설고 이상한 곳인데— 이상하게 따뜻하다. 잠이 들기 직전, 아틀란티스 냄새라는 말이 머릿속에 남는다.',
+    next: 'ch1_end'
+  },
+  ch1_end: {
+    bg: 'night_inn', char: '✨', speaker: '',
+    ending: {
+      icon: '🌕', type: 'CHAPTER 1 END',
+      title: '달빛 아래의 첫 밤',
+      desc: '"이야기가 있는 자에게는 이름이 남는다.\n그것이 선이든, 악이든."\n\n달빛여관의 첫 밤이 지나갔다.\n그리고— 다음 날 아침, 이상한 투숙객이 찾아온다.',
+      clearKey: 'ch1'
+    }
+  },
+
+  // ════ 챕터 2: 요괴의 냄새 ════
+  ch2_start: {
+    bg: 'night_inn', char: '🌙', speaker: '', text: '',
+    narration: "다음 날 아침.\n달빛여관에 어젯밤 새 투숙객이 왔다는 소문이 돈다.\n\n뮤뮤가 카운터 앞에 서 있다.\n평소와 다르게— 피자가 없다.",
+    next: 'ch2_mumu'
+  },
+  ch2_mumu: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '"어젯밤에 253호에 들어간 투숙객." 목소리가 낮다. 웃지 않는다. "냄새 맡았어요. 어젯밤에 말한 그 냄새예요."',
+    next: 'ch2_mumu2'
+  },
+  ch2_mumu2: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '"요괴예요. 근데—" 팬던트를 꽉 쥔다. "그냥 요괴가 아니에요. 아틀란티스 쪽 음기예요. 사흘째 방에서 안 나왔어요."',
+    next: 'ch2_haru'
+  },
+  ch2_haru: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"나도 알아." 뻥튀기를 내려놓는다. "허기가 찼어. 오래 굶은 요괴 냄새야." 잠깐 침묵. "여관에서 소멸하는 건 내가 허락 안 해."',
+    next: 'ch2_choice1'
+  },
+  ch2_choice1: {
+    bg: 'night_inn', char: '🐄', speaker: '', text: '',
+    choices: [
+      { icon: '⚔️', text: '"당장 내보내야 하지 않나요?"', tag: 'bold', next: 'ch2_kick' },
+      { icon: '🤝', text: '"여관은 모두를 받는다고 하지 않았나요?"', tag: 'wise', next: 'ch2_defend' },
+      { icon: '👁', text: '"직접 가서 확인해볼게요."', tag: 'normal', next: 'ch2_go' },
+    ]
+  },
+  ch2_kick: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"내보내?" 눈이 가늘어진다. 웃지 않는다. "선 안 넘으면 내보낼 이유 없어. 요괴도 쉬러 올 수 있어." 잠깐 멈추더니— "굶는 건 진상이 아니잖아."',
+    next: 'ch2_corridor'
+  },
+  ch2_defend: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"맞아." 고개를 끄덕인다. "그게 내 원칙이야. 근데 소멸하게 두는 건— 그것도 내 원칙에 어긋나."',
+    next: 'ch2_corridor'
+  },
+  ch2_go: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"직접?" 눈을 가늘게 뜬다. "용감하네. 여관 안에서는 내가 막을 수 있으니까— 가봐."',
+    next: 'ch2_corridor'
+  },
+  ch2_corridor: {
+    bg: 'dark', char: '🚪', speaker: '나레이터',
+    text: '2층 복도. 253호 앞. 문 너머에서 낮고 불규칙한 숨소리가 들린다. 음기가 문 틈새로 새어나온다.',
+    next: 'ch2_door'
+  },
+  ch2_door: {
+    bg: 'dark', char: '🚪', speaker: '', text: '',
+    choices: [
+      { icon: '💬', text: '"괜찮아요?"라고 말을 건넨다.', tag: 'wise', next: 'ch2_talk' },
+      { icon: '👁', text: '문에 귀를 대고 소리를 듣는다.', tag: 'normal', next: 'ch2_listen' },
+      { icon: '🚪', text: '문을 두드린다.', tag: 'bold', next: 'ch2_knock' },
+    ]
+  },
+  ch2_talk: {
+    bg: 'dark', char: '🌑', speaker: '???', speakerEmoji: '🌑',
+    text: '잠시 침묵. 그리고 쉰 목소리. "...들어오지 마."',
+    next: 'ch2_youkai_face'
+  },
+  ch2_listen: {
+    bg: 'dark', char: '🌑', speaker: '나레이터',
+    text: '낮게 갈린 숨소리. 그리고 작게 중얼거리는 소리— "...조금만... 더..."',
+    next: 'ch2_youkai_face'
+  },
+  ch2_knock: {
+    bg: 'dark', char: '🌑', speaker: '???', speakerEmoji: '🌑',
+    text: '잠시 뒤 긁히는 소리. 쉰 목소리가 새어나온다. "...뭐야."',
+    next: 'ch2_youkai_face'
+  },
+  ch2_youkai_face: {
+    bg: 'dark', char: '🌑', speaker: '나레이터',
+    text: '문이 조금 열린다. 틈새로 창백한 손이 보인다. 음기가 짙게 배어있는 눈— 어딘가 지쳐보이는 눈. "...뭘 원해."',
+    next: 'ch2_choice2'
+  },
+  ch2_choice2: {
+    bg: 'dark', char: '🌑', speaker: '', text: '',
+    choices: [
+      { icon: '🍱', text: '"밥 안 드셨잖아요. 식당에서 받아왔어요."', tag: 'wise', next: 'ch2_food' },
+      { icon: '💬', text: '"이야기 나누고 싶어서요."', tag: 'normal', next: 'ch2_talk2' },
+      { icon: '↩️', text: '말없이 돌아선다.', tag: 'bold', next: 'ch2_leave' },
+    ]
+  },
+  ch2_food: {
+    bg: 'dark', char: '🌑', speaker: '???', speakerEmoji: '🌑',
+    text: '잠시 침묵. 문이 조금 더 열린다. "...그걸 왜 나한테."',
+    next: 'ch2_food2'
+  },
+  ch2_food2: {
+    bg: 'dark', char: '🌑', speaker: '나레이터',
+    text: '허기가 찼던 눈빛이 조금 흔들린다. 음식을 받아들고— 조용히 문을 닫는다. 하지만 잠그지는 않는다.',
+    next: 'ch2_youkai_secret'
+  },
+  ch2_talk2: {
+    bg: 'dark', char: '🌑', speaker: '???', speakerEmoji: '🌑',
+    text: '"이야기." 낮게 웃는다. 비웃음이 아니다. 쓸쓸한 웃음이다. "요괴랑 이야기를 나누고 싶다고."',
+    next: 'ch2_youkai_secret'
+  },
+  ch2_leave: {
+    bg: 'dark', char: '나레이터', speaker: '나레이터',
+    text: '발걸음을 돌린다. 등 뒤에서 문이 완전히 닫히는 소리가 난다.',
+    next: 'ch2_youkai_secret'
+  },
+  ch2_youkai_secret: {
+    bg: 'dark', char: '🌑', speaker: '???', speakerEmoji: '🌑',
+    text: '잠시 뒤— 문 너머에서 목소리가 들린다. "...아틀란티스에서 도망쳤어."',
+    next: 'ch2_youkai_secret2'
+  },
+  ch2_youkai_secret2: {
+    bg: 'dark', char: '🌑', speaker: '???', speakerEmoji: '🌑',
+    text: '"음지 구역 근처에서— 뭔가가 있었어. 냄새가 났어. 이야기를 먹는 냄새." 목소리가 낮아진다. "나도 그게 뭔지 몰라. 근데 그게 깨어나고 있어."',
+    next: 'ch2_haru_resolve'
+  },
+  ch2_haru_resolve: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '카운터로 돌아오자 하루가 기다리고 있다. 말을 전하자— 그녀가 천천히 뻥튀기를 내려놓는다.',
+    next: 'ch2_haru_resolve2'
+  },
+  ch2_haru_resolve2: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"이야기를 먹는 것." 눈빛이 달라진다. 장난기가 완전히 사라진다. "...예전에 들은 적 있어. 오래전에."',
+    next: 'ch2_mumu_last'
+  },
+  ch2_mumu_last: {
+    bg: 'night_inn', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '뮤뮤가 2층을 올려다본다. 팬던트에서 손을 뗀다. "253호에 있을게요." 계단으로 올라가며 말한다. "굶는 건 진상이 아니니까요."',
+    next: 'ch2_end'
+  },
+  ch2_end: {
+    bg: 'night_inn', char: '✨', speaker: '',
+    ending: {
+      icon: '🌑', type: 'CHAPTER 2 END',
+      title: '음기의 온기',
+      desc: '"이야기를 먹는 것이 깨어나고 있다.\n아틀란티스에서 도망친 요괴는 그렇게 말했다.\n\n하루의 눈빛이 처음으로 달라졌다."',
+      clearKey: 'ch2'
+    }
+  },
+
+  // ════ 챕터 3: 느와르의 편지 ════
+  ch3_start: {
+    bg: 'ocean', char: '🌊', speaker: '', text: '',
+    narration: "사흘 뒤.\n\n달빛여관에 버블 스크롤 하나가 도착했다.\n물방울 모양의 봉인— 느와르에서 오는 편지 형식이다.\n\n하루가 편지를 집어들자 차가운 기운이 퍼진다.",
+    next: 'ch3_letter'
+  },
+  ch3_letter: {
+    bg: 'ocean', char: '💧', speaker: '하루', speakerEmoji: '🐄',
+    text: '"달빛여관 주인에게. 음지 구역에서 미확인 이야기가 감지됐다. 확인을 요청한다." 편지를 내려놓는다. "묵현이 보낸 거야."',
+    next: 'ch3_letter2'
+  },
+  ch3_letter2: {
+    bg: 'ocean', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"묵현이 직접 연락했다는 건—" 천천히 말한다. "보통 일이 아니야. 그 사람은 웬만해선 먼저 연락 안 해."',
+    next: 'ch3_mumu_ocean'
+  },
+  ch3_mumu_ocean: {
+    bg: 'ocean', char: '🐙', speaker: '뮤뮤', speakerEmoji: '🐙',
+    text: '뮤뮤가 조용히 말한다. "253호 요괴가 말한 것— 이야기를 먹는 것이 깨어나고 있다고 했잖아요." 팬던트를 쥔다. "그게 음지 구역이에요."',
+    next: 'ch3_choice1'
+  },
+  ch3_choice1: {
+    bg: 'ocean', char: '🐙', speaker: '', text: '',
+    choices: [
+      { icon: '🌊', text: '"느와르에 가보고 싶어요."', tag: 'bold', next: 'ch3_go' },
+      { icon: '📚', text: '"음지 구역이 뭔지 먼저 알아볼게요."', tag: 'wise', next: 'ch3_research' },
+      { icon: '❓', text: '"하루와 묵현은 무슨 관계예요?"', tag: 'normal', next: 'ch3_relation' },
+    ]
+  },
+  ch3_go: {
+    bg: 'ocean', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '눈을 가늘게 뜬다. "느와르는 보통 곳이 아니야. 특히 음지 구역은 800년 전 사건이 있던 곳이고." 잠깐 멈추더니— "나도 같이 가야겠어."',
+    next: 'ch3_library'
+  },
+  ch3_research: {
+    bg: 'night_inn', char: '🐯', speaker: '윤 의현', speakerEmoji: '🐯',
+    text: '지하 도서관. 의현이 물방울 문서를 건넨다. "음지 구역... 800년 전 집단 변천 사건이 있었던 곳이오. 주민 대부분이 요괴로 변했어요."',
+    next: 'ch3_research2'
+  },
+  ch3_research2: {
+    bg: 'night_inn', char: '🐯', speaker: '윤 의현', speakerEmoji: '🐯',
+    text: '"공식 원인은 음기 과포화." 느릿하게 말을 잇는다. "하지만 살아남은 자의 증언은 달랐소. 이야기를 먹는 무언가가 있었다고."',
+    next: 'ch3_library'
+  },
+  ch3_relation: {
+    bg: 'ocean', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '잠깐 침묵. "묵현이랑 나는... 오래전에 계약을 했어. 내용은 말 못 해." 뻥튀기를 다시 집어든다. "근데 그 계약으로 이어진 관계야."',
+    next: 'ch3_library'
+  },
+  ch3_library: {
+    bg: 'ocean', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"가야 할 것 같아." 왼쪽 이마의 빈 자리를 무의식적으로 만진다. "253호 요괴가 말한 것, 묵현의 편지, 그리고— 뮤뮤가 맡은 냄새." 눈이 조용해진다. "다 연결되어 있어."',
+    next: 'ch3_choice2'
+  },
+  ch3_choice2: {
+    bg: 'ocean', char: '🐄', speaker: '', text: '',
+    choices: [
+      { icon: '✊', text: '"같이 가겠습니다."', tag: 'bold', next: 'ch3_together' },
+      { icon: '🏠', text: '"저는 여관을 지킬게요."', tag: 'normal', next: 'ch3_stay' },
+    ]
+  },
+  ch3_together: {
+    bg: 'ocean', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '처음으로 제대로 웃는다. 장난기 없는, 진심 어린 웃음. "고마워. 혼자 가기엔 좀 외로웠거든."',
+    next: 'ch3_journey'
+  },
+  ch3_stay: {
+    bg: 'night_inn', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"그래도 돼." 고개를 끄덕인다. "뮤뮤랑 의현이 있으니까. 근데 이상한 일 생기면 바로 편지해."',
+    next: 'ch3_journey'
+  },
+  ch3_journey: {
+    bg: 'ocean', char: '🌊', speaker: '나레이터',
+    text: '흑류 선착장에서 수중 운송선을 탄다. 배 아래로 심해가 펼쳐진다— 어둡고 깊고 아름답다.',
+    next: 'ch3_atlantis'
+  },
+  ch3_atlantis: {
+    bg: 'ocean', char: '🌊', speaker: '나레이터',
+    text: '느와르. 수정 돔과 산호벽으로 이루어진 심해 도시. 발광 해파리들이 가로등 대신 떠다닌다. 붉은빛이 도는 밤이다.',
+    next: 'ch3_mukheyon'
+  },
+  ch3_mukheyon: {
+    bg: 'ocean', char: '🌑', speaker: '묵현', speakerEmoji: '🌑',
+    text: '칠흑궁 앞. 묵현이 기다리고 있다. "왔군."',
+    next: 'ch3_mukheyon2'
+  },
+  ch3_mukheyon2: {
+    bg: 'ocean', char: '🌑', speaker: '묵현', speakerEmoji: '🌑',
+    text: '"음지 구역에서 발견된 이야기는 오래된 것이다. 800년." 잠깐 멈춘다. "그때 혼자 살아남은 자의 이야기."',
+    next: 'ch3_mukheyon3'
+  },
+  ch3_mukheyon3: {
+    bg: 'ocean', char: '🌑', speaker: '묵현', speakerEmoji: '🌑',
+    text: '"봉인 감옥 13감방에 자발적으로 들어갔던 그 영물이— 이야기를 다시 쌓기 시작했다." 눈이 조용하다. "그것이 다시 깨어나고 있다는 뜻이다."',
+    next: 'ch3_haru_react'
+  },
+  ch3_haru_react: {
+    bg: 'ocean', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"그것이라고." 뻥튀기 봉지를 꽉 쥔다. "...이름 없는 것."',
+    next: 'ch3_mukheyon4'
+  },
+  ch3_mukheyon4: {
+    bg: 'ocean', char: '🌑', speaker: '묵현', speakerEmoji: '🌑',
+    text: '"내일 13감방으로 가자." 돌아서며 말한다. "살아남은 자가 직접 말해줄 것이다."',
+    next: 'ch3_end'
+  },
+  ch3_end: {
+    bg: 'ocean', char: '✨', speaker: '',
+    ending: {
+      icon: '🌊', type: 'CHAPTER 3 END',
+      title: '느와르의 밤',
+      desc: '"1장의 냄새, 2장의 도망친 요괴, 3장의 편지.\n모든 것이 음지 구역으로 이어진다.\n\n그리고— 800년을 봉인 속에서 기다린 자가 있다."',
+      clearKey: 'ch3'
+    }
+  },
+
+  // ════ 챕터 4: 음지 구역의 목소리 ════
+  ch4_start: {
+    bg: 'ocean', char: '🌙', speaker: '', text: '',
+    narration: "다음 날 아침.\n느와르의 빛이 들어오지 않는 시간.\n\n묵현이 봉인 감옥으로 안내한다.",
+    next: 'ch4_prison_walk'
+  },
+  ch4_prison_walk: {
+    bg: 'dark', char: '🌑', speaker: '나레이터',
+    text: '지하 최심층. 봉인 감옥. 제7감방을 지나쳤다— 가까이 가자 무언가를 그리워하는 감정이 밀려온다. 인어의 노래가 봉인된 곳이다.',
+    next: 'ch4_cell13_front'
+  },
+  ch4_cell13_front: {
+    bg: 'dark', char: '🚪', speaker: '나레이터',
+    text: '13감방. 문이 조용하다. 소리도 없다. 그런데— 이쪽을 알고 있다는 느낌이 든다.',
+    next: 'ch4_mukh_explain'
+  },
+  ch4_mukh_explain: {
+    bg: 'dark', char: '🌑', speaker: '묵현', speakerEmoji: '🌑',
+    text: '"800년 전, 음지 구역은 내가 허락한 실험이었다."',
+    next: 'ch4_mukh_explain2'
+  },
+  ch4_mukh_explain2: {
+    bg: 'dark', char: '🌑', speaker: '묵현', speakerEmoji: '🌑',
+    text: '"영물과 요괴가 공존하는 공동체. 양기와 음기의 균형. 48시간 후 문을 열었을 때— 주민 대부분이 요괴가 되어 있었다."',
+    next: 'ch4_mukh_explain3'
+  },
+  ch4_mukh_explain3: {
+    bg: 'dark', char: '🌑', speaker: '묵현', speakerEmoji: '🌑',
+    text: '"살아남은 자가 말했다. 이야기를 먹는 것이 있었다고." 잠깐 멈춘다. "나는— 문 앞에 있었다."',
+    next: 'ch4_haru_silent'
+  },
+  ch4_haru_silent: {
+    bg: 'dark', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"..."',
+    next: 'ch4_choice1'
+  },
+  ch4_choice1: {
+    bg: 'dark', char: '🚪', speaker: '', text: '',
+    choices: [
+      { icon: '🤝', text: '"안에 있나요?"라고 말을 건넨다.', tag: 'normal', next: 'ch4_voice' },
+      { icon: '👁', text: '문 앞에 서서 조용히 기다린다.', tag: 'wise', next: 'ch4_voice' },
+      { icon: '🔑', text: '묵현에게 문을 열어달라고 한다.', tag: 'bold', next: 'ch4_voice' },
+    ]
+  },
+  ch4_voice: {
+    bg: 'dark', char: '❓', speaker: '???', speakerEmoji: '❓',
+    text: '세 선택 모두— 안에서 목소리가 들린다. 낮고, 오래된 목소리다. "...왔구나."',
+    next: 'ch4_voice2'
+  },
+  ch4_voice2: {
+    bg: 'dark', char: '❓', speaker: '???', speakerEmoji: '❓',
+    text: '"800년을 기다렸어. 그것이 다시 깨어나면 누군가 오겠지— 그렇게 생각했거든."',
+    next: 'ch4_choice2'
+  },
+  ch4_choice2: {
+    bg: 'dark', char: '❓', speaker: '', text: '',
+    choices: [
+      { icon: '❓', text: '"그것이 뭔가요?"', tag: 'wise', next: 'ch4_what' },
+      { icon: '🕰️', text: '"그날 무슨 일이 있었나요?"', tag: 'normal', next: 'ch4_thatday' },
+      { icon: '🚪', text: '"나와서 직접 얘기할 수 있어요?"', tag: 'bold', next: 'ch4_comeout' },
+    ]
+  },
+  ch4_what: {
+    bg: 'dark', char: '❓', speaker: '???', speakerEmoji: '❓',
+    text: '"이름이 없어. 이름을 붙이면 더 강해지니까." 목소리가 낮아진다. "이야기를 먹는 것. 존재의 서사를 흡수해서 자신의 것으로 만들어. 그날 밤 깨어났어."',
+    next: 'ch4_shadow_zone'
+  },
+  ch4_thatday: {
+    bg: 'dark', char: '❓', speaker: '???', speakerEmoji: '❓',
+    text: '"밤이 오자 갑자기 모두가 조용해졌어. 소리도, 영력도, 숨소리도." 잠깐 침묵. "그리고 뭔가가 지나갔어. 바람처럼. 지나가는 곳마다 이야기가 사라졌어."',
+    next: 'ch4_shadow_zone'
+  },
+  ch4_comeout: {
+    bg: 'dark', char: '❓', speaker: '???', speakerEmoji: '❓',
+    text: '"나가면 그것이 나를 찾아와. 내 안에 그날의 기억이 있거든. 그 기억이 그것을 끌어당겨." 처음으로 목소리가 흔들린다. "...하지만 이제는 어차피 피할 수 없을 거야."',
+    next: 'ch4_shadow_zone'
+  },
+  ch4_shadow_zone: {
+    bg: 'dark', char: '🌑', speaker: '묵현', speakerEmoji: '🌑',
+    text: '"음지 구역으로 가야 한다." 돌아선다. "그것이 거기 있다."',
+    next: 'ch4_haru_ready'
+  },
+  ch4_haru_ready: {
+    bg: 'dark', char: '🐄', speaker: '하루', speakerEmoji: '🐄',
+    text: '"같이 가자." 법기를 꺼낸다. 황도 12궁 별자리 문양이 희미하게 빛난다.',
+    next: 'ch4_entrance'
+  },
+  ch4_entrance: {
+    bg: 'dark', char: '🚪', speaker: '나레이터',
+    text: '음지 구역 입구. 녹슨 철문. "출입 금지" 표지가 반쯤 떨어져 있다. 묵현이 손을 얹는다. 눈을 감더니— 문이 열린다. "800년 만이군."',
+    next: 'ch4_inside'
+  },
+  ch4_inside: {
+    bg: 'dark', char: '❓', speaker: '나레이터',
+    text: '무너진 건물들. 뒤틀린 산호벽. 바닥에 오래된 영력의 흔적이 얼룩져 있다. 그리고— 한가운데에 무언가가 있다.',
+    next: 'ch4_entity'
+  },
+  ch4_entity: {
+    bg: 'dark', char: '❓', speaker: '나레이터',
+    text: '형태가 없다. 빛도 없다. 어둠이 조금 더 짙은 것처럼 보이는 무언가. 그것이 천천히 이쪽을 향해 돌아선다.',
+    next: 'ch4_choice3'
+  },
+
+};
+
+// ── 사운드 시스템 (간소화) ──
+let audioCtx = null;
+let bgmGain = null;
+let bgmNodes = [];
+let sfxGain = null;
+let isMuted = false;
+
+function initAudio() {
+  try {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    bgmGain = audioCtx.createGain();
+    bgmGain.gain.value = 0.15;
+    bgmGain.connect(audioCtx.destination);
+    sfxGain = audioCtx.createGain();
+    sfxGain.gain.value = 0.4;
+    sfxGain.connect(audioCtx.destination);
+  } catch(e) { console.log('오디오 초기화 실패:', e); }
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  if (bgmGain) bgmGain.gain.value = isMuted ? 0 : 0.15;
+  if (sfxGain) sfxGain.gain.value = isMuted ? 0 : 0.4;
+  const btn = document.getElementById('mute-btn');
+  if (btn) btn.textContent = isMuted ? '🔇' : '🔊';
+}
+
+function stopBGM() {
+  bgmNodes.forEach(n => { try { n.stop(); } catch(e){} });
+  bgmNodes = [];
+}
+
+function playBGM(type) {
+  try {
+    if (!audioCtx || isMuted) return;
+    stopBGM();
+    if (type === 'inn') playInnBGM();
+    else if (type === 'tense') playTenseBGM();
+    else if (type === 'ocean') playOceanBGM();
+  } catch(e) {}
+}
+
+function playInnBGM() {
+  try {
+    const notes = [261.6, 329.6, 392, 523.2, 659.3, 523.2, 392, 329.6];
+    const times = [0, 0.6, 1.2, 1.8, 2.4, 3.0, 3.6, 4.2];
+    const loop = 4.8;
+    for (let rep = 0; rep < 20; rep++) {
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        g.gain.setValueAtTime(0, audioCtx.currentTime + rep*loop + times[i]);
+        g.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + rep*loop + times[i] + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + rep*loop + times[i] + 0.5);
+        osc.connect(g); g.connect(bgmGain);
+        osc.start(audioCtx.currentTime + rep*loop + times[i]);
+        osc.stop(audioCtx.currentTime + rep*loop + times[i] + 0.6);
+        bgmNodes.push(osc);
+      });
+    }
+  } catch(e) {}
+}
+
+function playTenseBGM() {
+  try {
+    [82.4, 87.3].forEach(freq => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain(); g.gain.value = 0.04;
+      o.type = 'sine'; o.frequency.value = freq;
+      o.connect(g); g.connect(bgmGain);
+      o.start(); bgmNodes.push(o);
+    });
+  } catch(e) {}
+}
+
+function playOceanBGM() {
+  try {
+    [130.8, 164.8].forEach(freq => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain(); g.gain.value = 0.04;
+      o.type = 'sine'; o.frequency.value = freq;
+      o.connect(g); g.connect(bgmGain);
+      o.start(); bgmNodes.push(o);
+    });
+  } catch(e) {}
+}
+
+function sfx(type) {
+  try {
+    if (!audioCtx || isMuted) return;
+    if (type === 'page' || type === 'click') {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = 660;
+      g.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+      o.connect(g); g.connect(sfxGain);
+      o.start(); o.stop(audioCtx.currentTime + 0.12);
+    } else if (type === 'choice') {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = 523;
+      g.gain.setValueAtTime(0.18, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+      o.connect(g); g.connect(sfxGain);
+      o.start(); o.stop(audioCtx.currentTime + 0.18);
+    } else if (type === 'ending') {
+      [523.2, 659.3, 783.9].forEach((f, i) => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0.18, audioCtx.currentTime + i*0.2);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i*0.2 + 0.7);
+        o.connect(g); g.connect(sfxGain);
+        o.start(audioCtx.currentTime + i*0.2);
+        o.stop(audioCtx.currentTime + i*0.2 + 0.8);
+      });
+    }
+  } catch(e) {}
+}
+
+// ── 챕터 정보 ──
+const CHAPTERS = [
+  { id: 'ch1', title: '제1장 — 달빛 아래의 첫 밤', desc: '달빛여관에 처음 도착한 날의 이야기.', startNode: 'ch1_start' },
+  { id: 'ch2', title: '제2장 — 요괴의 냄새', desc: '여관에 이상한 투숙객이 찾아온다.', startNode: 'ch2_start' },
+  { id: 'ch3', title: '제3장 — 느와르의 편지', desc: '심해도시에서 온 편지와 오래된 비밀.', startNode: 'ch3_start' },
+  { id: 'ch4', title: '제4장 — 음지 구역의 목소리', desc: '800년 전 그날의 진실을 찾아 음지 구역으로.', startNode: 'ch4_start' },
+];
+
+// ── 상태 ──
+let currentNode = null;
+let dialogQueue = [];
+let isTyping = false;
+let fullText = '';
+let displayText = '';
+let typingTimer = null;
+let gameLog = [];
+let cleared = JSON.parse(localStorage.getItem('dalbit-novel-cleared')||'{}');
+
+// ── 시작 ──
+function startNew() {
+  initAudio();
+  document.getElementById('title-screen').style.display = 'none';
+  loadNode('ch1_start');
+}
+
+function showChapterSelect() {
+  document.getElementById('title-screen').style.display = 'none';
+  const cs = document.getElementById('chapter-select');
+  cs.classList.add('show');
+  const list = document.getElementById('cs-list');
+  list.innerHTML = CHAPTERS.map((c, i) => {
+    const isFirst = i === 0;
+    const prevCleared = i === 0 || cleared[CHAPTERS[i-1].id];
+    const isLocked = !isFirst && !prevCleared;
+    return `<div class="cs-card${isLocked?' locked':''}" onclick="${isLocked?'':'startChapter(\''+c.startNode+'\')'}">
+      <div class="cs-num">CHAPTER ${i+1}</div>
+      <div class="cs-title">${c.title}</div>
+      <div class="cs-desc">${c.desc}</div>
+      <span class="cs-badge ${cleared[c.id]?'badge-clear':'badge-lock'}">${cleared[c.id]?'✓ 클리어':'🔒 잠김'}</span>
+    </div>`;
+  }).join('');
+}
+
+function startChapter(nodeId) {
+  initAudio();
+  document.getElementById('chapter-select').classList.remove('show');
+  loadNode(nodeId);
+}
+
+function showTitle() {
+  document.getElementById('ending-screen').classList.remove('show');
+  document.getElementById('title-screen').style.display = 'flex';
+  document.getElementById('chapter-select').classList.remove('show');
+}
+
+// ── 노드 로드 ──
+let prevBg = null;
+function loadNode(nodeId) {
+  const node = STORY[nodeId];
+  if (!node) return;
+  currentNode = nodeId;
+
+  // 배경
+  const bg = BG_COLORS[node.bg] || BG_COLORS.dark;
+  document.getElementById('scene-bg').style.background = bg;
+
+  // bg 바뀔 때만 파티클 + 배경 묘사 업데이트
+  if (node.bg && node.bg !== prevBg) {
+    updateParticles(node.bg);
+    showBgDesc(node.bg);
+    prevBg = node.bg;
+  }
+
+  // 스킬 이펙트
+  if (node.effect) skillEffect(node.effect);
+
+  // effectStyle 문서에 추가 (최초 1회)
+  if (!document.getElementById('effect-style')) {
+    effectStyle.id = 'effect-style';
+    document.head.appendChild(effectStyle);
+  }
+
+  // BGM 전환
+  if (audioCtx) {
+    if (node.bg === 'night_inn' || node.bg === 'forest' || node.bg === 'dawn') playBGM('inn');
+    else if (node.bg === 'dark' || node.bg === 'deep') playBGM('tense');
+    else if (node.bg === 'ocean') playBGM('ocean');
+    sfx('page');
+  }
+
+  // 챕터 뱃지
+  if (nodeId.startsWith('ch1')) document.getElementById('chapter-badge').textContent = '제1장 — 달빛여관의 문';
+  else if (nodeId.startsWith('ch2')) document.getElementById('chapter-badge').textContent = '제2장 — 요괴의 냄새';
+  else if (nodeId.startsWith('ch3')) document.getElementById('chapter-badge').textContent = '제3장 — 느와르의 편지';
+  else if (nodeId.startsWith('ch4')) document.getElementById('chapter-badge').textContent = '제4장 — 음지 구역의 목소리';
+
+  // 캐릭터
+  if (node.char) {
+    const cd = document.getElementById('char-display');
+    cd.style.opacity = '0';
+    setTimeout(() => { cd.textContent = node.char; cd.style.opacity = '1'; }, 200);
+  }
+
+  // 엔딩
+  if (node.ending) {
+    setTimeout(() => showEnding(node.ending), 800);
+    return;
+  }
+
+  // 나레이션
+  if (node.narration) {
+    showNarration(node.narration, () => {
+      if (node.next) loadNode(node.next);
+    });
+    return;
+  }
+
+  // 선택지
+  if (node.choices) {
+    document.getElementById('dialog-box').style.display = 'none';
+    showChoices(node.choices);
+    return;
+  }
+
+  // 대화
+  document.getElementById('dialog-box').style.display = 'block';
+  document.getElementById('choices-box').classList.add('hidden');
+  document.getElementById('tap-hint').style.display = 'block';
+
+  const sn = document.getElementById('speaker-name');
+  const snEmoji = sn.querySelector('.sn-emoji');
+  const snText = document.getElementById('sn-text');
+
+  if (node.speaker) {
+    sn.style.display = 'flex';
+    snEmoji.textContent = node.speakerEmoji || '';
+    snText.textContent = node.speaker;
+  } else {
+    sn.style.display = 'none';
+  }
+
+  // 로그 추가
+  if (node.text) {
+    gameLog.push({ speaker: node.speaker || '', text: node.text, isNarr: !node.speaker });
+  }
+
+  typeText(node.text || '', node.next);
+}
+
+function typeText(text, nextNode) {
+  clearTimeout(typingTimer);
+  fullText = text;
+  displayText = '';
+  isTyping = true;
+  const el = document.getElementById('dialog-text');
+  let i = 0;
+
+  function tick() {
+    if (i < fullText.length) {
+      displayText += fullText[i++];
+      el.textContent = displayText;
+      typingTimer = setTimeout(tick, 28);
+    } else {
+      isTyping = false;
+      if (nextNode) {
+        document.getElementById('tap-hint').style.display = 'block';
+        document.getElementById('dialog-box').onclick = () => loadNode(nextNode);
+      } else {
+        document.getElementById('tap-hint').style.display = 'none';
+      }
+    }
+  }
+  tick();
+}
+
+function nextLine() {
+  if (isTyping) {
+    clearTimeout(typingTimer);
+    document.getElementById('dialog-text').textContent = fullText;
+    isTyping = false;
+    return;
+  }
+}
+
+// ── 선택지 ──
+function showChoices(choices) {
+  const box = document.getElementById('choices-box');
+  box.innerHTML = '';
+  box.classList.remove('hidden');
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    const tagClass = c.tag === 'bold' ? 'ct-bold' : c.tag === 'wise' ? 'ct-wise' : 'ct-normal';
+    const tagText = c.tag === 'bold' ? '과감' : c.tag === 'wise' ? '현명' : '일반';
+    btn.innerHTML = `<span class="choice-icon">${c.icon}</span>${c.text}<span class="choice-tag ${tagClass}">${tagText}</span>`;
+    btn.onclick = () => {
+      sfx('choice');
+      gameLog.push({ speaker: '나', text: c.text, isNarr: false });
+      box.classList.add('hidden');
+      document.getElementById('dialog-box').style.display = 'block';
+      loadNode(c.next);
+    };
+    box.appendChild(btn);
+  });
+}
+
+// ── 나레이션 ──
+let _narrationCallback = null;
+function showNarration(text, cb) {
+  _narrationCallback = cb;
+  document.getElementById('narration-text').innerHTML = text.replace(/\n/g, '<br>');
+  document.getElementById('narration').classList.add('show');
+}
+function closeNarration() {
+  document.getElementById('narration').classList.remove('show');
+  if (_narrationCallback) { _narrationCallback(); _narrationCallback = null; }
+}
+
+// ── 엔딩 ──
+function showEnding(e) {
+  sfx('ending');
+  stopBGM();
+  if (e.clearKey) {
+    cleared[e.clearKey] = true;
+    localStorage.setItem('dalbit-novel-cleared', JSON.stringify(cleared));
+  }
+  document.getElementById('ending-icon').textContent = e.icon;
+  document.getElementById('ending-type').textContent = e.type;
+  document.getElementById('ending-title').textContent = e.title;
+  document.getElementById('ending-desc').innerHTML = e.desc.replace(/\n/g, '<br>');
+  document.getElementById('ending-screen').classList.add('show');
+}
+
+// ── 로그 ──
+function showLog() {
+  const body = document.getElementById('log-body');
+  if (gameLog.length === 0) {
+    body.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);font-size:12px">아직 대화 기록이 없어요.</div>';
+  } else {
+    body.innerHTML = gameLog.map(e =>
+      `<div class="log-entry${e.isNarr?' narr':''}">
+        ${e.speaker ? `<div class="log-speaker">${e.speaker}</div>` : ''}
+        ${e.text}
+      </div>`
+    ).join('');
+  }
+  document.getElementById('log-screen').classList.add('show');
+  body.scrollTop = body.scrollHeight;
+}
+function hideLog() {
+  document.getElementById('log-screen').classList.remove('show');
+}
+</script>
+</body>
+</html>
