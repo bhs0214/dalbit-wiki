@@ -3,10 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>달빛여관</title>
+<title>달빛여관 — 영물세계</title>
+<meta name="description" content="죽은 자들의 안식처. 요괴도 영물도 쉬어가는 곳. 세계관 백과·비주얼 노벨·AI 역극을 한곳에서.">
+<meta name="theme-color" content="#0a0806">
+<link rel="canonical" href="https://xn--2j1b67omb.site/">
+<!-- Open Graph / 공유 미리보기 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="달빛여관">
+<meta property="og:title" content="🌕 달빛여관 (達光旅館)">
+<meta property="og:description" content="죽은 자들의 안식처. 요괴도 영물도 쉬어가는 곳.">
+<meta property="og:url" content="https://xn--2j1b67omb.site/">
+<meta property="og:image" content="https://xn--2j1b67omb.site/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="🌕 달빛여관 (達光旅館)">
+<meta name="twitter:description" content="죽은 자들의 안식처. 요괴도 영물도 쉬어가는 곳.">
+<meta name="twitter:image" content="https://xn--2j1b67omb.site/og-cover.png">
+<!-- PWA / 아이콘 -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="달빛여관">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script>
 (function(){
   var v = '20250606';
@@ -342,6 +364,10 @@ for(let i = 0; i < 14; i++){
   p.className = 'pt';
   p.style.cssText = `left:${Math.random()*100}%;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;animation-duration:${10+Math.random()*14}s;animation-delay:${Math.random()*14}s`;
   pe.appendChild(p);
+}
+// PWA: 서비스 워커 등록 (오프라인·홈 화면 설치 지원)
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 </script>
 </body>
