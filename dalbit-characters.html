@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>달빛여관 — 인명부</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+:root{
+  --bg:#0a0806;--card:#1e1610;--border:rgba(232,213,163,0.13);
+  --moon:#e8d5a3;--moon2:#c9a84c;--ember:#c9623f;--jade:#4a7c6f;
+  --text:#f0e6d3;--text2:rgba(240,230,211,0.6);--text3:rgba(240,230,211,0.28);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;min-height:100vh;display:flex;justify-content:center;}
+#app{width:100%;max-width:430px;min-height:100vh;padding:0 20px 60px;}
+
+.top{display:flex;align-items:center;gap:10px;padding:18px 0 6px;}
+.back{color:var(--text3);text-decoration:none;font-size:20px;padding:4px 8px;}
+.top h1{font-family:'Noto Serif KR',serif;font-size:18px;color:var(--moon);letter-spacing:.1em;flex:1;text-align:center;}
+.top .sp{width:36px;}
+.subtitle{text-align:center;font-size:11px;color:var(--text3);letter-spacing:.1em;margin-bottom:18px;}
+
+/* 탭 */
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;justify-content:center;}
+.tab{padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;
+  border:1px solid var(--border);color:var(--text2);background:transparent;transition:all .15s;}
+.tab.on{background:rgba(232,213,163,.1);color:var(--moon);border-color:rgba(232,213,163,.35);}
+
+/* 카드 */
+.char-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:16px;margin-bottom:10px;}
+.cc-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.cc-emoji{width:44px;height:44px;border-radius:50%;background:rgba(232,213,163,.06);
+  border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.cc-name{font-family:'Noto Serif KR',serif;font-size:15px;font-weight:600;color:var(--text);}
+.cc-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.cc-kind{margin-left:auto;font-size:10px;padding:3px 9px;border-radius:20px;flex-shrink:0;}
+.k-yeong{background:rgba(74,124,111,.15);color:var(--jade);}
+.k-yo{background:rgba(201,98,63,.15);color:var(--ember);}
+.k-etc{background:rgba(232,213,163,.1);color:var(--moon2);}
+.cc-intro{font-size:12.5px;color:var(--text2);line-height:1.7;}
+.cc-owner{font-size:10px;color:var(--text3);margin-top:8px;text-align:right;}
+.empty{text-align:center;color:var(--text3);font-size:13px;padding:50px 0;line-height:2;}
+
+/* 신청 */
+.divider{display:flex;align-items:center;gap:12px;margin:34px 0 18px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;
+  background:linear-gradient(to right,transparent,rgba(232,213,163,.15),transparent);}
+.divider-text{font-size:11px;color:var(--text3);letter-spacing:.15em;}
+.form{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.form h2{font-family:'Noto Serif KR',serif;font-size:14px;color:var(--moon);margin-bottom:4px;}
+.form .desc{font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.6;}
+.field{margin-bottom:11px;}
+.field label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;
+  background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:9px;
+  font-size:13px;color:var(--text);font-family:'Noto Sans KR',sans-serif;outline:none;}
+.field input:focus,.field textarea:focus{border-color:rgba(232,213,163,.4);}
+.field textarea{resize:vertical;min-height:70px;line-height:1.6;}
+.row2{display:flex;gap:8px;}
+.row2 .field{flex:1;}
+.submit{width:100%;padding:12px;background:var(--moon);color:var(--bg);border:none;
+  border-radius:11px;font-size:13.5px;font-family:'Noto Serif KR',serif;font-weight:700;
+  letter-spacing:.08em;cursor:pointer;margin-top:4px;}
+.submit:disabled{opacity:.4;cursor:default;}
+.msg{margin-top:10px;font-size:12px;text-align:center;line-height:1.6;}
+.msg.ok{color:var(--jade);}
+.msg.err{color:var(--ember);}
+.notice{background:rgba(232,213,163,.05);border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;font-size:11.5px;color:var(--text2);line-height:1.7;margin-bottom:14px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <a class="back" href="index.html">‹</a>
+    <h1>🏮 인명부</h1>
+    <span class="sp"></span>
+  </div>
+  <div class="subtitle">달빛여관에 이야기를 남긴 존재들</div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-k="전체">전체</button>
+    <button class="tab" data-k="영물">영물</button>
+    <button class="tab" data-k="요괴">요괴</button>
+    <button class="tab" data-k="기타">기타</button>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="divider"><span class="divider-text">✦ 캐릭터 등록 신청 ✦</span></div>
+
+  <form class="form" id="apply-form">
+    <h2>새로운 이야기를 등록하세요</h2>
+    <div class="desc">신청하면 관리자 확인 후 인명부에 올라갑니다.</div>
+    <div class="row2">
+      <div class="field">
+        <label>캐릭터 이름 *</label>
+        <input name="name" maxlength="20" required placeholder="예) 설아">
+      </div>
+      <div class="field">
+        <label>이모지</label>
+        <input name="emoji" maxlength="4" placeholder="예) 🦊">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>구분 *</label>
+        <select name="kind">
+          <option>영물</option>
+          <option>요괴</option>
+          <option>기타</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>종족/유래</label>
+        <input name="species" maxlength="20" placeholder="예) 여우">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>소속/가문</label>
+        <input name="affiliation" maxlength="20" placeholder="예) 백호 가문">
+      </div>
+      <div class="field">
+        <label>나이</label>
+        <input name="age" maxlength="15" placeholder="예) 300살">
+      </div>
+    </div>
+    <div class="field">
+      <label>소개 *</label>
+      <textarea name="intro" maxlength="500" required placeholder="캐릭터의 이야기, 성격, 외형 등을 자유롭게 적어주세요."></textarea>
+    </div>
+    <div class="field">
+      <label>신청자 닉네임 *</label>
+      <input name="owner" maxlength="20" required placeholder="본인 닉네임">
+    </div>
+    <button type="submit" class="submit" id="submit-btn">✦ 신청하기</button>
+    <div class="msg" id="form-msg"></div>
+  </form>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// ★ 신청함 주소 (구글 Apps Script 웹앱 URL)
+// 설정가이드/신청함-설정방법.md 를 따라 만든 뒤 붙여넣으세요.
+// 비어있으면 신청 폼이 비활성화됩니다.
+// ─────────────────────────────────────────────
+const APPLY_URL = '';
+
+let CHARS = [];
+let filter = '전체';
+
+async function loadChars(){
+  const list = document.getElementById('list');
+  try{
+    const res = await fetch('characters.json?t=' + Date.now());
+    CHARS = await res.json();
+  }catch(e){
+    CHARS = [];
+  }
+  render();
+}
+
+function render(){
+  const list = document.getElementById('list');
+  const shown = CHARS.filter(c => filter === '전체' ||
+    (filter === '기타' ? (c.kind !== '영물' && c.kind !== '요괴') : c.kind === filter));
+  if(!shown.length){
+    list.innerHTML = '<div class="empty">🌙 아직 등록된 존재가 없어요<br>아래에서 첫 캐릭터를 신청해보세요</div>';
+    return;
+  }
+  list.innerHTML = shown.map(c => {
+    const kClass = c.kind === '영물' ? 'k-yeong' : c.kind === '요괴' ? 'k-yo' : 'k-etc';
+    const meta = [c.species, c.affiliation, c.age].filter(Boolean).join(' · ');
+    return `<div class="char-card">
+      <div class="cc-head">
+        <div class="cc-emoji">${esc(c.emoji || '🌙')}</div>
+        <div>
+          <div class="cc-name">${esc(c.name)}</div>
+          <div class="cc-meta">${esc(meta)}</div>
+        </div>
+        <span class="cc-kind ${kClass}">${esc(c.kind || '기타')}</span>
+      </div>
+      <div class="cc-intro">${esc(c.intro || '')}</div>
+      ${c.owner ? `<div class="cc-owner">by ${esc(c.owner)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function esc(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+// 탭
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab');
+  if(!btn) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  filter = btn.dataset.k;
+  render();
+});
+
+// 신청 폼
+const form = document.getElementById('apply-form');
+const formMsg = document.getElementById('form-msg');
+const submitBtn = document.getElementById('submit-btn');
+
+if(!APPLY_URL){
+  submitBtn.disabled = true;
+  formMsg.className = 'msg';
+  formMsg.textContent = '⚠️ 신청함이 아직 연결되지 않았어요. (관리자: 설정가이드 참고)';
+}
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  if(!APPLY_URL) return;
+  const data = Object.fromEntries(new FormData(form).entries());
+  data._type = 'character';
+  data._date = new Date().toLocaleString('ko-KR');
+  submitBtn.disabled = true;
+  submitBtn.textContent = '보내는 중...';
+  try{
+    await fetch(APPLY_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify(data),
+    });
+    formMsg.className = 'msg ok';
+    formMsg.textContent = '✦ 신청이 접수됐어요! 관리자 확인 후 인명부에 등록됩니다.';
+    form.reset();
+  }catch(err){
+    formMsg.className = 'msg err';
+    formMsg.textContent = '전송에 실패했어요. 잠시 후 다시 시도해주세요.';
+  }
+  submitBtn.disabled = false;
+  submitBtn.textContent = '✦ 신청하기';
+});
+
+loadChars();
+</script>
+</body>
+</html>

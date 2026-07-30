@@ -3,24 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="description" content="선택으로 이어지는 비주얼 노벨. 달빛여관 3개 챕터 수록.">
-<meta name="theme-color" content="#0a0806">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="달빛여관">
-<meta property="og:title" content="달빛여관 — 비주얼 노벨">
-<meta property="og:description" content="선택으로 이어지는 오프라인 스토리. 달빛여관 3개 챕터.">
-<meta property="og:url" content="https://xn--2j1b67omb.site/dalbit-novel.html">
-<meta property="og:image" content="https://xn--2j1b67omb.site/og-cover.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://xn--2j1b67omb.site/og-cover.png">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="달빛여관">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>달빛여관 — 이야기</title>
 <!-- cache bust -->
 <style>
@@ -276,7 +261,6 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;display:flex;jus
 </style>
 </head>
 <body>
-<a href="index.html" id="dalbit-back" aria-label="메인으로" title="메인으로" style="position:fixed;top:10px;left:10px;z-index:9999;display:inline-flex;align-items:center;gap:3px;background:rgba(10,8,6,.62);color:#e8d5a3;text-decoration:none;font:500 12px/1 'Noto Sans KR',sans-serif;padding:7px 12px 7px 9px;border:1px solid rgba(232,213,163,.28);border-radius:20px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 2px 10px rgba(0,0,0,.35);">‹ 메인</a>
 
 <div id="app">
   <!-- 배경 -->
@@ -294,6 +278,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;display:flex;jus
     </div>
     <div class="title-btns">
       <button class="title-btn" onclick="startNew()">✦ 이야기 시작</button>
+      <button class="title-btn secondary" id="novel-continue-btn" onclick="continueNovel()" style="display:none">↻ 이어하기</button>
       <button class="title-btn secondary" onclick="showChapterSelect()">챕터 선택</button>
     </div>
   </div>
@@ -312,6 +297,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;display:flex;jus
     <div class="top-title">🏮 달빛여관</div>
     <div class="top-right">
       <button class="icon-btn" id="mute-btn" onclick="toggleMute()">🔊</button>
+      <button class="icon-btn" id="speed-btn" onclick="cycleSpeed()">속도·보통</button>
       <button class="icon-btn" onclick="showLog()">기록</button>
       <button class="icon-btn" onclick="showTitle()">타이틀</button>
     </div>
@@ -1259,9 +1245,47 @@ let typingTimer = null;
 let gameLog = [];
 let cleared = JSON.parse(localStorage.getItem('dalbit-novel-cleared')||'{}');
 
+// ── 자동 저장 (이어하기) ──
+const NOVEL_SAVE_KEY = 'dalbit-novel-save';
+function saveNovelProgress(nodeId) {
+  try { localStorage.setItem(NOVEL_SAVE_KEY, nodeId); } catch(e) {}
+}
+function clearNovelProgress() {
+  try { localStorage.removeItem(NOVEL_SAVE_KEY); } catch(e) {}
+}
+(function initNovelContinue(){
+  const saved = localStorage.getItem(NOVEL_SAVE_KEY);
+  if (saved && STORY[saved]) {
+    document.getElementById('novel-continue-btn').style.display = 'inline-block';
+  }
+})();
+function continueNovel() {
+  const saved = localStorage.getItem(NOVEL_SAVE_KEY);
+  if (!saved || !STORY[saved]) { startNew(); return; }
+  initAudio();
+  document.getElementById('title-screen').style.display = 'none';
+  loadNode(saved);
+}
+
+// ── 텍스트 속도 (보통 → 빠름 → 즉시) ──
+const SPEEDS = [
+  { label: '속도·보통', ms: 28 },
+  { label: '속도·빠름', ms: 12 },
+  { label: '속도·즉시', ms: 0 },
+];
+let speedIdx = parseInt(localStorage.getItem('dalbit-novel-speed') || '0');
+if (isNaN(speedIdx) || speedIdx < 0 || speedIdx >= SPEEDS.length) speedIdx = 0;
+document.getElementById('speed-btn').textContent = SPEEDS[speedIdx].label;
+function cycleSpeed() {
+  speedIdx = (speedIdx + 1) % SPEEDS.length;
+  try { localStorage.setItem('dalbit-novel-speed', String(speedIdx)); } catch(e) {}
+  document.getElementById('speed-btn').textContent = SPEEDS[speedIdx].label;
+}
+
 // ── 시작 ──
 function startNew() {
   initAudio();
+  clearNovelProgress();
   document.getElementById('title-screen').style.display = 'none';
   loadNode('ch1_start');
 }
@@ -1302,6 +1326,7 @@ function loadNode(nodeId) {
   const node = STORY[nodeId];
   if (!node) return;
   currentNode = nodeId;
+  saveNovelProgress(nodeId);
 
   // 배경
   const bg = BG_COLORS[node.bg] || BG_COLORS.dark;
@@ -1399,10 +1424,12 @@ function typeText(text, nextNode) {
   let i = 0;
 
   function tick() {
+    const ms = SPEEDS[speedIdx].ms;
+    if (ms === 0) { i = fullText.length; displayText = fullText; el.textContent = fullText; }
     if (i < fullText.length) {
       displayText += fullText[i++];
       el.textContent = displayText;
-      typingTimer = setTimeout(tick, 28);
+      typingTimer = setTimeout(tick, ms);
     } else {
       isTyping = false;
       if (nextNode) {
@@ -1463,6 +1490,7 @@ function closeNarration() {
 function showEnding(e) {
   sfx('ending');
   stopBGM();
+  clearNovelProgress(); // 챕터를 끝냈으니 중간 저장 삭제
   if (e.clearKey) {
     cleared[e.clearKey] = true;
     localStorage.setItem('dalbit-novel-cleared', JSON.stringify(cleared));
