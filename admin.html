@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리 — 달빛여관 (達光旅館)</title>
+<meta name="description" content="죽은 자들의 안식처, 요괴도 영물도 쉬어가는 곳 — 달빛여관 영물세계 세계관">
+<meta name="robots" content="noindex"><meta property="og:type" content="website">
+<meta property="og:site_name" content="달빛여관 (達光旅館)">
+<meta property="og:title" content="관리 — 달빛여관 (達光旅館)">
+<meta property="og:description" content="달빛이 설(說)을 비출 때 영물들은 피어난다. 이야기가 있는 자에게는 이름이 남는다.">
+<meta property="og:image" content="https://xn--2j1b67omb.site/og.png">
+<meta property="og:url" content="https://xn--2j1b67omb.site/admin.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#191919" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗝</text></svg>">
+<script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="image" href="cover.jpg">
+<link rel="stylesheet" href="style.css?v=20260918d">
+<!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
+</head>
+<body>
+<div class="scrim"></div>
+<aside class="side">
+  <a class="ws" href="index.html"><span class="m">🌕</span><span>달빛여관 (達光旅館)<small>영물세계 · 세계관</small></span></a>
+  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class=""><span class="i">👥</span>인명부 · 신청</a><a href="changes.html" class=""><span class="i">🔄</span>9.17 이전 분들께</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
+  <div class="side-foot"><a href="index.html">달빛여관 (達光旅館)</a><a class="adm" href="admin.html" title="관리">🗝</a></div>
+</aside>
+<main>
+  <div class="top">
+    <button class="menu" aria-label="메뉴">☰</button>
+    <div class="crumb"><a href="index.html">🌕 달빛여관 (達光旅館)</a><span class="sep">/</span><a href="admin.html">🗝 관리</a></div>
+    <span class="sp"></span>
+    <button class="theme" aria-label="테마 전환">☾</button>
+  </div>
+  <div class="cover"></div>
+  <div class="page">
+    <div class="icon">🗝</div>
+    <h1 class="title">관리</h1>
+    <article class="doc page-admin">
+<p>신청 승인·반려, 상태 변경, 내용 수정을 여기서 합니다. 바뀐 내용은 구글 시트에 그대로 저장돼요.</p>
+
+<div id="login" class="form" style="max-width:420px">
+  <div class="field"><label>관리 비밀번호</label><input id="key" type="password" autocomplete="current-password" placeholder="Apps Script 의 ADMIN_KEY"></div>
+  <button class="submit" id="login-btn">들어가기</button>
+  <div class="msg" id="login-msg"></div>
+</div>
+
+<div id="panel" style="display:none">
+  <div class="admin-bar">
+    <div class="chips" id="st-chips">
+      <button class="chip on" data-s="심사중">심사중</button>
+      <button class="chip" data-s="활동중">활동중</button>
+      <button class="chip" data-s="휴면">휴면</button>
+      <button class="chip" data-s="소멸">소멸</button>
+      <button class="chip" data-s="반려">반려</button>
+      <button class="chip" data-s="전체">전체</button>
+    </div>
+    <div class="admin-tools">
+      <button class="abtn" id="reload">↻ 새로고침</button>
+      <button class="abtn" id="logout">나가기</button>
+    </div>
+  </div>
+  <div class="sbox"><span>🔍</span><input id="aq" placeholder="이름 · 오너 검색"></div>
+  <div class="count" id="acount"></div>
+  <div id="alist" class="alist"><div class="empty">불러오는 중…</div></div>
+</div>
+
+<script>
+// APPLY_URL 은 characters.html 과 같은 주소입니다 (빌드 시 자동으로 채워짐)
+const APPLY_URL = 'https://script.google.com/macros/s/AKfycbzknl32hDnlFwvh5s_QBsjnWETX7sfF4QtKF6TXy7I8RKPisiBQiIIATof9LXlYdXgN/exec';
+const STATUSES = ['심사중','활동중','휴면','소멸','반려'];
+const FIELDS = [['name','이름'],['owner','오너'],['emoji','이모지'],['kind','종족'],['origin','출신'],['motif','모티프'],['affiliation','소속'],['base','거점'],['role','직책'],['artifact','법기'],['rank','랭크'],['look','외형'],['story','이야기'],['artifactDesc','법기설명'],['line','한줄']];
+const LONG = new Set(['look','story','artifactDesc']);
+let ITEMS = [], stF = '심사중', KEY = '';
+const $ = id => document.getElementById(id);
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+async function api(body){
+  const r = await fetch(APPLY_URL, {method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(Object.assign({_type:'admin', key:KEY}, body))});
+  return r.json();
+}
+async function load(){
+  $('alist').innerHTML = '<div class="empty">불러오는 중…</div>';
+  try{
+    const d = await api({action:'list'});
+    if(!d.ok){ if(d.error==='key'){ logout('비밀번호가 틀렸어요.'); } else $('alist').innerHTML = '<div class="empty">오류: '+esc(d.error)+'</div>'; return; }
+    ITEMS = d.items; render();
+  }catch(e){ $('alist').innerHTML = '<div class="empty">시트를 불러오지 못했어요. Apps Script 를 새 코드로 재배포했는지 확인해 주세요.<br><small>'+esc(e)+'</small></div>'; }
+}
+function render(){
+  const q = ($('aq').value||'').trim().toLowerCase();
+  const list = ITEMS.filter(c => (stF==='전체' || (c.status||'')===stF) && (!q || [c.name,c.owner].join(' ').toLowerCase().includes(q)));
+  STATUSES.forEach(s => { const b = document.querySelector(`#st-chips .chip[data-s="${s}"]`); const n = ITEMS.filter(c=>c.status===s).length; b.textContent = s + (n?` ${n}`:''); });
+  $('acount').textContent = list.length ? `${list.length}건` : '';
+  $('alist').innerHTML = list.length ? list.map(card).join('') : '<div class="empty">여기에 해당하는 신청이 없어요</div>';
+}
+function badge(s){ const cls = {심사중:'b-wait',활동중:'b-on',휴면:'b-dim',소멸:'b-gone',반려:'b-no'}[s]||'b-dim'; return `<span class="badge ${cls}">${esc(s||'(없음)')}</span>`; }
+function card(c){
+  const who = c.kind==='인간' ? '인간' : [c.origin, c.motif].filter(Boolean).join(' · ');
+  const where = [c.affiliation, c.role, c.base].filter(Boolean).join(' · ');
+  const btn = (s, label, cls='') => c.status===s ? '' : `<button class="abtn ${cls}" data-act="status" data-row="${c.row}" data-s="${s}">${label}</button>`;
+  return `<div class="acard" id="row-${c.row}">
+    <div class="ahead">
+      <div class="aemoji">${esc(c.emoji||'🌙')}</div>
+      <div class="atitle"><b>${esc(c.name)}</b> ${badge(c.status)} <span class="arank">${esc(c.rank||'')}</span>
+        <div class="ameta">${esc(c.kind||'')} · ${esc(who)}${where?' · '+esc(where):''} · by ${esc(c.owner)} <span class="adate">${esc(c.date)}</span></div></div>
+    </div>
+    <div class="abody">
+      <div><b>법기</b> ${esc(c.artifact)} — ${esc(c.artifactDesc)}</div>
+      <div><b>외형</b> ${esc(c.look)}</div>
+      <div><b>${c.kind==='인간'?'왜 계약했는가':'이야기'}</b> ${esc(c.story)}</div>
+      ${c.line?`<div><b>한 줄</b> ${esc(c.line)}</div>`:''}
+    </div>
+    <div class="abtns">
+      ${btn('활동중','✓ 승인 (활동중)','primary')}${btn('반려','반려')}${btn('휴면','휴면')}${btn('소멸','소멸 (책으로)')}
+      <button class="abtn" data-act="edit" data-row="${c.row}">✎ 수정</button>
+      <button class="abtn danger" data-act="delete" data-row="${c.row}">삭제</button>
+    </div>
+    <div class="aedit" id="edit-${c.row}" style="display:none"></div>
+  </div>`;
+}
+function editForm(c){
+  const f = FIELDS.map(([k,label]) => LONG.has(k)
+    ? `<div class="field"><label>${label}</label><textarea name="${k}">${esc(c[k])}</textarea></div>`
+    : `<div class="field"><label>${label}</label><input name="${k}" value="${esc(c[k])}"></div>`).join('');
+  return `<form class="form" data-row="${c.row}">${f}<div class="abtns"><button class="abtn primary" type="submit">저장</button><button class="abtn" type="button" data-act="cancel" data-row="${c.row}">취소</button></div><div class="msg"></div></form>`;
+}
+async function setStatus(row, s){
+  const c = ITEMS.find(x=>x.row===row); if(!c) return;
+  busy(row, true);
+  const d = await api({action:'status', row, status:s}).catch(()=>({ok:false,error:'net'}));
+  if(d.ok){ c.status = s; render(); } else { alert('실패: '+d.error); busy(row,false); }
+}
+async function del(row){
+  const c = ITEMS.find(x=>x.row===row); if(!c) return;
+  if(!confirm(`「${c.name}」을(를) 시트에서 완전히 지울까요?\n소멸한 캐릭터라면 삭제 대신 「소멸」을 권해요.`)) return;
+  busy(row, true);
+  const d = await api({action:'delete', row}).catch(()=>({ok:false,error:'net'}));
+  if(d.ok){ await load(); } else { alert('실패: '+d.error); busy(row,false); }   // 행 번호가 바뀌므로 다시 읽음
+}
+function busy(row, on){ const el = $('row-'+row); if(el) el.style.opacity = on ? .45 : 1; }
+
+$('alist').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-act]'); if(!b) return;
+  const row = +b.dataset.row, act = b.dataset.act;
+  if(act==='status') setStatus(row, b.dataset.s);
+  else if(act==='delete') del(row);
+  else if(act==='edit'){ const c = ITEMS.find(x=>x.row===row); const box = $('edit-'+row); box.innerHTML = editForm(c); box.style.display = 'block'; }
+  else if(act==='cancel'){ const box = $('edit-'+row); box.style.display = 'none'; box.innerHTML = ''; }
+});
+$('alist').addEventListener('submit', async e => {
+  e.preventDefault(); const f = e.target; const row = +f.dataset.row;
+  const fields = Object.fromEntries(new FormData(f).entries());
+  const msg = f.querySelector('.msg'); msg.textContent = '저장 중…'; msg.className = 'msg';
+  const d = await api({action:'update', row, fields}).catch(()=>({ok:false,error:'net'}));
+  if(d.ok){ const c = ITEMS.find(x=>x.row===row); Object.assign(c, fields); render(); }
+  else { msg.textContent = '실패: '+d.error; msg.className = 'msg err'; }
+});
+$('st-chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove('on')); b.classList.add('on'); stF = b.dataset.s; render(); });
+$('aq').addEventListener('input', render);
+$('reload').addEventListener('click', load);
+
+function logout(msg){ KEY=''; try{sessionStorage.removeItem('dalbit-admin-key');}catch(e){} $('panel').style.display='none'; $('login').style.display='block'; $('login-msg').textContent = msg||''; $('login-msg').className='msg err'; }
+function login(k){ KEY = k; try{sessionStorage.setItem('dalbit-admin-key',k);}catch(e){} $('login').style.display='none'; $('panel').style.display='block'; load(); }
+$('login-btn').addEventListener('click', () => { const k = $('key').value.trim(); if(k) login(k); });
+$('key').addEventListener('keydown', e => { if(e.key==='Enter') $('login-btn').click(); });
+$('logout').addEventListener('click', () => logout());
+try{ const k = sessionStorage.getItem('dalbit-admin-key'); if(k) login(k); }catch(e){}
+</script>
+
+    </article>
+
+  </div>
+</main>
+<script src="site.js?v=20260918d" defer></script>
+</body>
+</html>
