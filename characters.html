@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인명부 — 달빛여관 (達光旅館)</title>
+<meta name="description" content="죽은 자들의 안식처, 요괴도 영물도 쉬어가는 곳 — 달빛여관 영물세계 세계관">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="달빛여관 (達光旅館)">
+<meta property="og:title" content="인명부 — 달빛여관 (達光旅館)">
+<meta property="og:description" content="달빛이 설(說)을 비출 때 영물들은 피어난다. 이야기가 있는 자에게는 이름이 남는다.">
+<meta property="og:image" content="https://xn--2j1b67omb.site/og.png">
+<meta property="og:url" content="https://xn--2j1b67omb.site/characters.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👥</text></svg>">
+<script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="scrim"></div>
+<aside class="side">
+  <a class="ws" href="index.html"><span class="m">🌕</span><span>달빛여관 (達光旅館)<small>영물세계 · 세계관</small></span></a>
+  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class="on"><span class="i">👥</span>인명부 · 신청</a><a href="changes.html" class=""><span class="i">🔄</span>9.17 이전 분들께</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
+  <div class="side-foot"><a href="index.html">달빛여관 (達光旅館)</a></div>
+</aside>
+<main>
+  <div class="top">
+    <button class="menu" aria-label="메뉴">☰</button>
+    <div class="crumb"><a href="index.html">🌕 달빛여관 (達光旅館)</a><span class="sep">/</span><a href="characters.html">👥 인명부</a></div>
+    <span class="sp"></span>
+    <button class="theme" aria-label="테마 전환">☾</button>
+  </div>
+  <div class="cover"></div>
+  <div class="page">
+    <div class="icon">👥</div>
+    <h1 class="title">인명부</h1>
+    <article class="doc ">
+<p>달빛여관에 이야기를 남긴 존재들입니다. 신청은 페이지 아래에서.</p>
+
+<div id="src-note" class="notice" style="display:none"></div>
+
+<div class="chips" id="kind-chips">
+  <button class="chip on" data-k="전체">전체</button>
+  <button class="chip" data-k="영물">영물</button>
+  <button class="chip" data-k="요괴">요괴</button>
+  <button class="chip" data-k="인간">인간</button>
+</div>
+<div class="chips sub" id="aff-chips">
+  <button class="chip on" data-a="전체">모든 소속</button>
+  <button class="chip" data-a="중앙">중앙</button>
+  <button class="chip" data-a="가문">가문</button>
+  <button class="chip" data-a="달빛여관">달빛여관</button>
+  <button class="chip" data-a="무소속">무소속</button>
+</div>
+<div class="sbox"><span>🔍</span><input id="q" placeholder="이름 · 무엇이었나 · 법기 검색" oninput="render()"></div>
+<div class="count" id="count"></div>
+
+<div id="list" class="clist"><div class="empty">불러오는 중…</div></div>
+
+<div id="library" style="display:none">
+  <h2>📚 설(說)의 도서관</h2>
+  <div class="lib-desc">이야기를 다한 이들. 사라진 것이 아니라 — 책으로 남았습니다.</div>
+  <div id="lib-list" class="clist"></div>
+</div>
+
+<h2 id="apply">✍️ 캐릭터 등록 신청</h2>
+
+<form class="form" id="apply-form" autocomplete="off">
+  <div class="desc">
+    처음이시면 <a href="make.html">캐릭터 만들기</a>를 먼저 읽어보세요. 샘플 캐릭터도 있어요.<br>
+    신청하면 운영진 확인 후 인명부에 올라갑니다.
+  </div>
+
+  <div class="fsec">기본</div>
+  <div class="row2">
+    <div class="field"><label>캐릭터 이름 *</label><input name="name" maxlength="20" required placeholder="예) 누렁"></div>
+    <div class="field"><label>이모지 <small>(선택)</small></label><input name="emoji" maxlength="4" placeholder="🐕"></div>
+  </div>
+  <div class="field">
+    <label>종족 *</label>
+    <select name="kind" id="f-kind" required>
+      <option value="영물">영물 — 선한 이야기에서 태어남</option>
+      <option value="요괴">요괴 — 악한 이야기에서 태어남</option>
+      <option value="인간">인간 — 계약을 맺고 들어온 자</option>
+    </select>
+  </div>
+  <div class="human-note" id="human-note">
+    🤝 인간은 <b>계약 상대(영물/요괴 캐릭터)</b>가 필요합니다. 아직 없다면 달빛여관에서 구하시면 돼요 — 원래 그런 곳이니까요.
+    <a href="human.html">인간과 계약 →</a>
+  </div>
+  <div class="row2" id="origin-row">
+    <div class="field">
+      <label>출신 *</label>
+      <select name="origin" id="f-origin">
+        <option value="동물">동물</option>
+        <option value="식물">식물</option>
+        <option value="그 외">그 외 — 사물 · 마음 · 장소 · 고대종 · 환상종 …</option>
+      </select>
+    </div>
+    <div class="field"><label>무엇이었나요 *</label><input name="motif" id="f-motif" maxlength="20" placeholder="예) 개, 밧줄, 해태"></div>
+  </div>
+  <div class="field">
+    <label>외형 *</label>
+    <textarea name="look" maxlength="400" required placeholder="인간의 모습 + 남은 고유 신체가 있다면. 예) 스무 살 안팎의 청년. 귀 끝이 조금 뾰족하다."></textarea>
+    <div class="hint">영물도 요괴도 인간의 모습입니다. 꼬리·귀·뿔 정도가 남을 뿐이에요.</div>
+  </div>
+
+  <div class="fsec">소속</div>
+  <div class="field">
+    <label>소속 *</label>
+    <select name="affiliation" required>
+      <option value="중앙">중앙 (프람) — 자격과 규칙</option>
+      <option value="가문">가문 — 혈통과 전통</option>
+      <option value="달빛여관">달빛여관 — 여관에서 일함</option>
+      <option value="무소속" selected>무소속</option>
+    </select>
+    <div class="hint">요괴는 원칙적으로 중앙에 들어갈 수 없습니다. (관리자가 붙으면 예외)</div>
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label>거점 <small>(선택)</small></label>
+      <select name="base">
+        <option value="">— 정하지 않음</option>
+        <option>판테라</option><option>아발론</option><option>아틀란티스</option>
+        <option>다오렌</option><option>레퀸</option><option>육신세계</option>
+      </select>
+    </div>
+    <div class="field"><label>직책 <small>(선택)</small></label><input name="role" maxlength="30" placeholder="예) 차사, 요리사, 잉어 가문"></div>
+  </div>
+
+  <div class="fsec">법기</div>
+  <div class="row2">
+    <div class="field"><label>법기 이름 *</label><input name="artifact" maxlength="30" required placeholder="예) 낡은 목줄"></div>
+    <div class="field">
+      <label>랭크 *</label>
+      <select name="rank" required>
+        <option value="C" selected>C — 평범</option>
+        <option value="B">B — 평균</option>
+        <option value="A">A — 술식급</option>
+        <option value="EX">EX — 규격 외</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label>법기 설명 *</label>
+    <textarea name="artifactDesc" maxlength="500" required placeholder="무엇인가 · 왜 소중했는가 · 무엇을 할 수 있는가"></textarea>
+    <div class="hint">법기는 능력이 아니라 이야기입니다. "왜 소중했는가"를 먼저 적어보세요. 낮은 랭크가 약한 캐릭터라는 뜻은 아니에요.</div>
+  </div>
+
+  <div class="fsec">이야기</div>
+  <div class="field">
+    <label id="story-label">이야기 *</label>
+    <textarea name="story" id="f-story" maxlength="800" required placeholder="생전에 어떤 존재였고, 어떻게 죽었는가"></textarea>
+  </div>
+  <div class="field"><label>한 줄 <small>(선택)</small></label><input name="line" maxlength="80" placeholder="이 캐릭터를 한 문장으로"></div>
+
+  <div class="fsec">신청자</div>
+  <div class="field">
+    <label>오너 닉네임 *</label>
+    <input name="owner" maxlength="20" required placeholder="디스코드 닉 등">
+    <div class="hint">실명·연락처는 적지 마세요.</div>
+  </div>
+
+  <button type="submit" class="submit" id="submit-btn">✦ 신청하기</button>
+  <div class="msg" id="form-msg"></div>
+</form>
+
+<script>
+// ─────────────────────────────────────────────
+// ★ 신청함 주소 (구글 Apps Script 웹앱 URL)
+// 설정가이드/신청함-설정방법.md 를 따라 만든 뒤 붙여넣으세요.
+// 이 주소 하나로 신청(저장)과 인명부(읽기)를 모두 처리합니다.
+// 비어있으면: 신청 폼 비활성 + characters.json 을 대신 표시
+// ─────────────────────────────────────────────
+const APPLY_URL = '';
+
+let CHARS=[], kindF='전체', affF='전체';
+const KIND_EMOJI={영물:'🌕',요괴:'🌑',인간:'🧍'}, KIND_CLASS={영물:'k-yeong',요괴:'k-yo',인간:'k-human'};
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function note(t){const n=document.getElementById('src-note');if(!t){n.style.display='none';return;}n.textContent=t;n.style.display='block';}
+
+async function loadChars(){
+  if(APPLY_URL){
+    try{ const r=await fetch(APPLY_URL+'?t='+Date.now(),{cache:'no-store'}); CHARS=await r.json(); note(''); render(); return; }
+    catch(e){ note('⚠️ 시트를 불러오지 못했어요. 잠시 후 새로고침해 주세요.'); }
+  }else note('⚠️ 관리자: 신청함이 아직 연결되지 않았어요. (설정가이드 참고) — 지금은 characters.json 을 표시 중');
+  try{ const r=await fetch('characters.json?t='+Date.now()); CHARS=await r.json(); }catch(e){ CHARS=[]; }
+  render();
+}
+function card(c,lib){
+  const kc=KIND_CLASS[c.kind]||'k-etc', em=c.emoji||KIND_EMOJI[c.kind]||'🌙';
+  const who=c.kind==='인간'?'인간':(c.origin==='그 외'||!c.origin)?(c.motif||''):[c.origin,c.motif].filter(Boolean).join(' · ');
+  const where=[c.affiliation,c.role,c.base].filter(Boolean).join(' · ');
+  const rank=c.rank?`<span class="cc-rank ${c.rank==='EX'?'ex':''}">${esc(c.rank)}</span>`:'';
+  const st=c.status&&c.status!=='활동중'&&!lib?`<span class="cc-status">${esc(c.status)}</span>`:'';
+  return `<div class="cc${(c.status==='휴면'||lib)?' dim':''}">
+    <div class="cc-head"><div class="cc-emoji">${lib?'📖':esc(em)}</div>
+      <div class="cc-title"><div class="cc-name">${esc(c.name)} ${rank}${st}</div><div class="cc-meta">${esc(who)}${where?' · '+esc(where):''}</div></div>
+      <span class="cc-kind ${kc}">${esc(c.kind||'')}</span></div>
+    ${c.artifact?`<div class="cc-art">⚔ 법기 — <b>${esc(c.artifact)}</b></div>`:''}
+    ${c.line?`<div class="cc-line">${esc(c.line)}</div>`:''}
+    ${(c.look||c.story||c.artifactDesc)?`<details><summary>더 보기</summary>
+      ${c.look?`<div class="cc-sec"><b>외형</b>${esc(c.look)}</div>`:''}
+      ${c.story?`<div class="cc-sec"><b>${c.kind==='인간'?'왜 계약했는가':'이야기'}</b>${esc(c.story)}</div>`:''}
+      ${c.artifactDesc?`<div class="cc-sec"><b>법기</b>${esc(c.artifactDesc)}</div>`:''}</details>`:''}
+    ${c.owner?`<div class="cc-owner">by ${esc(c.owner)}</div>`:''}</div>`;
+}
+function render(){
+  const q=(document.getElementById('q').value||'').trim().toLowerCase();
+  const m=c=>(kindF==='전체'||c.kind===kindF)&&(affF==='전체'||c.affiliation===affF)&&(!q||[c.name,c.motif,c.artifact,c.role,c.owner].filter(Boolean).join(' ').toLowerCase().includes(q));
+  const act=CHARS.filter(c=>(c.status||'활동중')!=='소멸'&&m(c)), gone=CHARS.filter(c=>c.status==='소멸'&&m(c));
+  document.getElementById('list').innerHTML=act.length?act.map(c=>card(c,false)).join(''):'<div class="empty">🌙 아직 등록된 존재가 없어요<br>아래에서 첫 캐릭터를 신청해보세요</div>';
+  document.getElementById('count').textContent=act.length?`${act.length}명`:'';
+  const lib=document.getElementById('library');
+  if(gone.length){lib.style.display='block';document.getElementById('lib-list').innerHTML=gone.map(c=>card(c,true)).join('');}else lib.style.display='none';
+}
+document.getElementById('kind-chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');kindF=b.dataset.k;render();});
+document.getElementById('aff-chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');affF=b.dataset.a;render();});
+
+const kindSel=document.getElementById('f-kind');
+function onKind(){
+  const h=kindSel.value==='인간';
+  document.getElementById('origin-row').style.display=h?'none':'flex';
+  document.getElementById('human-note').style.display=h?'block':'none';
+  document.getElementById('f-origin').required=!h; document.getElementById('f-motif').required=!h;
+  document.getElementById('story-label').textContent=h?'왜 계약했는가 *':'이야기 *';
+  document.getElementById('f-story').placeholder=h?'살아있는 인간이 왜 이 세계로 넘어왔는가. 무엇을 걸었는가.':'생전에 어떤 존재였고, 어떻게 죽었는가';
+}
+kindSel.addEventListener('change',onKind); onKind();
+
+const form=document.getElementById('apply-form'), formMsg=document.getElementById('form-msg'), submitBtn=document.getElementById('submit-btn');
+if(!APPLY_URL){submitBtn.disabled=true;formMsg.className='msg';formMsg.textContent='⚠️ 신청함이 아직 연결되지 않았어요. (관리자: 설정가이드 참고)';}
+form.addEventListener('submit',async e=>{
+  e.preventDefault(); if(!APPLY_URL)return;
+  const d=Object.fromEntries(new FormData(form).entries());
+  if(d.kind==='인간'){d.origin='인간';d.motif='인간';}
+  d._type='character'; d._date=new Date().toLocaleString('ko-KR');
+  submitBtn.disabled=true; submitBtn.textContent='보내는 중...';
+  try{ await fetch(APPLY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)});
+    formMsg.className='msg ok'; formMsg.textContent='✦ 신청이 접수됐어요! 운영진 확인 후 인명부에 올라갑니다.'; form.reset(); onKind();
+  }catch(err){ formMsg.className='msg err'; formMsg.textContent='전송에 실패했어요. 잠시 후 다시 시도해주세요.'; }
+  submitBtn.disabled=false; submitBtn.textContent='✦ 신청하기';
+});
+loadChars();
+</script>
+
+    </article>
+<div class="pager"><a class="prev" href="make.html"><small>‹ 이전</small>✍️ 캐릭터 만들기</a><a class="next" href="changes.html"><small>다음 ›</small>🔄 9.17 이전 분들께</a></div>
+  </div>
+</main>
+<script src="site.js"></script>
+</body>
+</html>
