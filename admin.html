@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260920c">
+<link rel="stylesheet" href="style.css?v=20260920e">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -26,7 +26,7 @@
 <div class="scrim"></div>
 <aside class="side">
   <a class="ws" href="index.html"><span class="m">🌕</span><span>달빛여관 (達光旅館)<small>영물세계 · 세계관</small></span></a>
-  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class=""><span class="i">👥</span>인명부 · 신청</a><a href="changes.html" class=""><span class="i">🔄</span>9.17 이전 분들께</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
+  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class=""><span class="i">👥</span>인명부 · 신청</a><a href="changes.html" class=""><span class="i">🔄</span>9.17 이전 분들께</a><div class="grp">소식</div><a href="news.html" class=""><span class="i">🗞️</span>중앙 영물 신문</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
   <div class="side-foot"><a href="index.html">달빛여관 (達光旅館)</a><a class="adm" href="admin.html" title="관리">🗝</a></div>
 </aside>
 <main>
@@ -50,6 +50,39 @@
 </div>
 
 <div id="panel" style="display:none">
+  <div class="tabs" id="tabs"><button class="tab on" data-t="chars">👥 인명부</button><button class="tab" data-t="news">🗞️ 신문 쓰기</button></div>
+
+  <div id="tab-news" style="display:none">
+    <form class="form" id="news-form" autocomplete="off">
+      <input type="hidden" name="row" value="">
+      <div class="fsec" id="news-form-title">새 기사</div>
+      <div class="row2">
+        <div class="field"><label>날짜</label><input name="date" type="date"></div>
+        <div class="field"><label>꼭지</label>
+          <select name="section">
+            <option value="특종">특종 — 큰 사건</option><option value="속보">속보 — 방금 벌어진 일</option>
+            <option value="기획">기획 — 읽을거리</option><option value="생활" selected>생활 — 소소한 화제</option>
+            <option value="추적 중">추적 중 — 미해결 사건 (위에 고정)</option><option value="해결">해결 — 끝난 사건</option>
+            <option value="공지">공지</option>
+          </select></div>
+      </div>
+      <div class="field"><label>제목</label><input name="title" maxlength="120" required placeholder="예) [특종] 설의 도서관에서 책 한 권이 사라졌다"></div>
+      <div class="field"><label>본문</label><textarea name="body" rows="10" placeholder="빈 줄로 문단을 나눕니다. 줄 앞에 '> '를 붙이면 인용, '## '를 붙이면 소제목, '---' 는 구분선."></textarea></div>
+      <div class="row2">
+        <div class="field"><label>상태</label><select name="status"><option value="게시">게시 — 사이트에 보임</option><option value="초안">초안 — 나만 보임</option></select></div>
+      </div>
+      <div class="abtns"><button class="abtn primary" type="submit" id="news-save">올리기</button><button class="abtn" type="button" id="news-cancel" style="display:none">새 글로</button></div>
+      <div class="msg" id="news-msg"></div>
+    </form>
+    <div class="admin-bar" style="margin-top:18px">
+      <div class="chips" id="ns-chips"><button class="chip on" data-s="전체">전체</button><button class="chip" data-s="게시">게시</button><button class="chip" data-s="초안">초안</button><button class="chip" data-s="추적 중">추적 중</button></div>
+      <div class="admin-tools"><button class="abtn" id="news-reload">↻ 새로고침</button></div>
+    </div>
+    <div class="count" id="news-count"></div>
+    <div id="news-alist" class="alist"><div class="empty">불러오는 중…</div></div>
+  </div>
+
+  <div id="tab-chars">
   <div class="admin-bar">
     <div class="chips" id="st-chips">
       <button class="chip on" data-s="심사중">심사중</button>
@@ -67,6 +100,7 @@
   <div class="sbox"><span>🔍</span><input id="aq" placeholder="이름 · 오너 검색"></div>
   <div class="count" id="acount"></div>
   <div id="alist" class="alist"><div class="empty">불러오는 중…</div></div>
+  </div>
 </div>
 
 <script>
@@ -187,8 +221,56 @@ $('st-chips').addEventListener('click', e => { const b = e.target.closest('.chip
 $('aq').addEventListener('input', render);
 $('reload').addEventListener('click', load);
 
+// ── 신문 ──
+let NEWS=[], nsF='전체';
+const SEC_CLASS={'특종':'s-top','속보':'s-flash','기획':'s-feat','생활':'s-life','추적 중':'s-open','해결':'s-done','공지':'s-notice'};
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function normDate(d){ d=String(d||'').trim(); if(/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0,10); const t=new Date(d); if(isNaN(t)) return d; return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+async function loadNews(){
+  $('news-alist').innerHTML='<div class="empty">불러오는 중…</div>';
+  const d=await api({action:'news_list'}).catch(()=>({ok:false,error:'net'}));
+  if(!d.ok){ $('news-alist').innerHTML='<div class="empty">신문을 불러오지 못했어요: '+esc(d.error)+'<br><small>Apps Script 를 신문 기능이 든 새 코드로 재배포했는지 확인해 주세요.</small></div>'; return; }
+  d.items.forEach(n=>n.date=normDate(n.date)); NEWS=d.items.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.row-a.row); renderNews();
+}
+function renderNews(){
+  const list=NEWS.filter(n=>nsF==='전체'||(nsF==='추적 중'?n.section==='추적 중':n.status===nsF));
+  $('news-count').textContent=list.length?`${list.length}건 · 게시 ${NEWS.filter(n=>n.status==='게시').length} · 초안 ${NEWS.filter(n=>n.status!=='게시').length}`:'';
+  $('news-alist').innerHTML=list.length?list.map(n=>`<div class="acard" id="nrow-${n.row}">
+    <div class="ahead"><div class="atitle"><span class="sec ${SEC_CLASS[n.section]||'s-life'}">${esc(n.section)}</span> ${badge(n.status)} <span class="adate">${esc(n.date)}</span>
+      <div style="font-weight:600;margin-top:4px">${esc(n.title)}</div></div></div>
+    <div class="abody" style="max-height:120px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent)">${esc(n.body)}</div>
+    <div class="abtns">
+      ${n.status==='게시'?`<button class="abtn" data-nact="status" data-row="${n.row}" data-s="초안">내리기 (초안으로)</button>`:`<button class="abtn primary" data-nact="status" data-row="${n.row}" data-s="게시">게시</button>`}
+      ${n.section==='추적 중'?`<button class="abtn" data-nact="resolve" data-row="${n.row}">✓ 해결됨으로</button>`:''}
+      <button class="abtn" data-nact="edit" data-row="${n.row}">✎ 수정</button>
+      <button class="abtn danger" data-nact="delete" data-row="${n.row}">삭제</button>
+    </div></div>`).join(''):'<div class="empty">기사가 없어요. 위에서 첫 기사를 써보세요.</div>';
+}
+const nf=$('news-form');
+function newsReset(){ nf.reset(); nf.elements.row.value=''; nf.elements.date.value=today(); $('news-form-title').textContent='새 기사'; $('news-save').textContent='올리기'; $('news-cancel').style.display='none'; $('news-msg').textContent=''; }
+nf.addEventListener('submit', async e=>{
+  e.preventDefault(); const f=Object.fromEntries(new FormData(nf).entries()); const row=+f.row; delete f.row;
+  const msg=$('news-msg'); msg.className='msg'; msg.textContent='저장 중…';
+  const d=await api(row?{action:'news_update',row,fields:f}:{action:'news_add',fields:f}).catch(()=>({ok:false,error:'net'}));
+  if(d.ok){ msg.className='msg ok'; msg.textContent=row?'✓ 수정했어요':'✓ 올렸어요'; newsReset(); loadNews(); }
+  else { msg.className='msg err'; msg.textContent='실패: '+d.error; }
+});
+$('news-cancel').addEventListener('click', newsReset);
+$('news-reload').addEventListener('click', loadNews);
+$('ns-chips').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove('on')); b.classList.add('on'); nsF=b.dataset.s; renderNews(); });
+$('news-alist').addEventListener('click', async e=>{
+  const b=e.target.closest('button[data-nact]'); if(!b) return; const row=+b.dataset.row, act=b.dataset.nact; const n=NEWS.find(x=>x.row===row); if(!n) return;
+  if(act==='edit'){ for(const k of ['date','section','title','body','status']) nf.elements[k].value=n[k]||''; nf.elements.row.value=row; $('news-form-title').textContent='기사 수정'; $('news-save').textContent='수정 저장'; $('news-cancel').style.display='inline-block'; nf.scrollIntoView({behavior:'smooth'}); return; }
+  if(act==='delete'){ if(!confirm(`「${n.title}」 기사를 지울까요?`)) return; }
+  const body=act==='status'?{action:'news_status',row,status:b.dataset.s}:act==='resolve'?{action:'news_update',row,fields:{section:'해결'}}:{action:'news_delete',row};
+  const d=await api(body).catch(()=>({ok:false,error:'net'}));
+  if(d.ok) loadNews(); else alert('실패: '+d.error);
+});
+$('tabs').addEventListener('click', e=>{ const b=e.target.closest('.tab'); if(!b) return; [...$('tabs').children].forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  const news=b.dataset.t==='news'; $('tab-news').style.display=news?'block':'none'; $('tab-chars').style.display=news?'none':'block'; if(news&&!NEWS.length) loadNews(); });
+
 function logout(msg){ KEY=''; try{sessionStorage.removeItem('dalbit-admin-key');}catch(e){} $('panel').style.display='none'; $('login').style.display='block'; $('login-msg').textContent = msg||''; $('login-msg').className='msg err'; }
-function login(k){ KEY = k; try{sessionStorage.setItem('dalbit-admin-key',k);}catch(e){} $('login').style.display='none'; $('panel').style.display='block'; load(); }
+function login(k){ KEY = k; try{sessionStorage.setItem('dalbit-admin-key',k);}catch(e){} $('login').style.display='none'; $('panel').style.display='block'; newsReset(); load(); }
 $('login-btn').addEventListener('click', () => { const k = $('key').value.trim(); if(k) login(k); });
 $('key').addEventListener('keydown', e => { if(e.key==='Enter') $('login-btn').click(); });
 $('logout').addEventListener('click', () => logout());
@@ -199,6 +281,6 @@ try{ const k = sessionStorage.getItem('dalbit-admin-key'); if(k) login(k); }catc
 
   </div>
 </main>
-<script src="site.js?v=20260920c" defer></script>
+<script src="site.js?v=20260920e" defer></script>
 </body>
 </html>

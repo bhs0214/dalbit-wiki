@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>중앙 영물 신문 — 달빛여관 (達光旅館)</title>
+<meta name="description" content="죽은 자들의 안식처, 요괴도 영물도 쉬어가는 곳 — 달빛여관 영물세계 세계관">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="달빛여관 (達光旅館)">
+<meta property="og:title" content="중앙 영물 신문 — 달빛여관 (達光旅館)">
+<meta property="og:description" content="달빛이 설(說)을 비출 때 영물들은 피어난다. 이야기가 있는 자에게는 이름이 남는다.">
+<meta property="og:image" content="https://xn--2j1b67omb.site/og.png">
+<meta property="og:url" content="https://xn--2j1b67omb.site/news.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#191919" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗞️</text></svg>">
+<script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="image" href="cover.jpg">
+<link rel="stylesheet" href="style.css?v=20260920e">
+<!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
+</head>
+<body>
+<div class="scrim"></div>
+<aside class="side">
+  <a class="ws" href="index.html"><span class="m">🌕</span><span>달빛여관 (達光旅館)<small>영물세계 · 세계관</small></span></a>
+  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class=""><span class="i">👥</span>인명부 · 신청</a><a href="changes.html" class=""><span class="i">🔄</span>9.17 이전 분들께</a><div class="grp">소식</div><a href="news.html" class="on"><span class="i">🗞️</span>중앙 영물 신문</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
+  <div class="side-foot"><a href="index.html">달빛여관 (達光旅館)</a><a class="adm" href="admin.html" title="관리">🗝</a></div>
+</aside>
+<main>
+  <div class="top">
+    <button class="menu" aria-label="메뉴">☰</button>
+    <div class="crumb"><a href="index.html">🌕 달빛여관 (達光旅館)</a><span class="sep">/</span><a href="news.html">🗞️ 중앙 영물 신문</a></div>
+    <span class="sp"></span>
+    <button class="theme" aria-label="테마 전환">☾</button>
+  </div>
+  <div class="cover"></div>
+  <div class="page">
+    <div class="icon">🗞️</div>
+    <h1 class="title">중앙 영물 신문</h1>
+    <article class="doc ">
+<p>가이아 대륙에서 오늘 벌어지는 일들. 진지한 것도, 아닌 것도 함께 실립니다.</p>
+
+<div id="open-cases" class="cases" style="display:none">
+  <div class="cases-head">🔍 추적 중 — 아직 풀리지 않은 일들</div>
+  <div id="case-list"></div>
+</div>
+
+<div class="chips" id="sec-chips">
+  <button class="chip on" data-s="전체">전체</button>
+  <button class="chip" data-s="특종">특종</button>
+  <button class="chip" data-s="속보">속보</button>
+  <button class="chip" data-s="기획">기획</button>
+  <button class="chip" data-s="생활">생활</button>
+  <button class="chip" data-s="추적 중">추적 중</button>
+  <button class="chip" data-s="공지">공지</button>
+</div>
+<div class="sbox"><span>🔍</span><input id="nq" placeholder="제목 · 본문 검색" oninput="renderNews()"></div>
+<div class="count" id="ncount"></div>
+
+<div id="news-list" class="nlist"><div class="empty">불러오는 중…</div></div>
+<div id="news-more" style="display:none;text-align:center;margin-top:16px"><button class="abtn" id="more-btn">지난 기사 더 보기</button></div>
+
+<script>
+const APPLY_URL = 'https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5jCg_V0ncwXQgCrxczcI5Qnzvo0DJDGEv1umaStNCaBTgAf7/exec';
+const SEC_CLASS = {'특종':'s-top','속보':'s-flash','기획':'s-feat','생활':'s-life','추적 중':'s-open','해결':'s-done','공지':'s-notice'};
+let NEWS=[], secF='전체', LIMIT=20;
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+// 본문: 빈 줄 = 문단, "> " = 인용, "## " = 소제목, "---" = 구분선
+function fmt(b){
+  return (b||'').replace(/\r/g,'').split(/\n{2,}/).map(p=>{
+    p=p.trim(); if(!p) return '';
+    if(/^---+$/.test(p)) return '<hr>';
+    if(p.startsWith('> ')) return '<div class="quote"><p>'+p.split('\n').map(l=>esc(l.replace(/^>\s?/,''))).join('<br>')+'</p></div>';
+    if(p.startsWith('#')) return '<h4>'+esc(p.replace(/^#+\s*/,''))+'</h4>';
+    return '<p>'+p.split('\n').map(esc).join('<br>')+'</p>';
+  }).join('');
+}
+// 시트가 날짜 칸을 자동 변환하면 "Mon Apr 21 2025 ..." 로 오기도 함 → 항상 yyyy-mm-dd 로 맞춤
+function normDate(d){ d=String(d||'').trim(); if(/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0,10); const t=new Date(d); if(isNaN(t)) return d; return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+function dateK(d){ const m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(d||''); return m?`${m[1]}년 ${+m[2]}월 ${+m[3]}일`:esc(d||''); }
+function article(n){
+  const sc=SEC_CLASS[n.section]||'s-life';
+  return `<article class="news"><div class="news-head"><span class="sec ${sc}">${esc(n.section||'기사')}</span><span class="ndate">${dateK(n.date)}</span></div>
+    <h3 class="ntitle">${esc(n.title)}</h3><div class="nbody">${fmt(n.body)}</div></article>`;
+}
+function renderNews(){
+  const q=(document.getElementById('nq').value||'').trim().toLowerCase();
+  const list=NEWS.filter(n=>(secF==='전체'||n.section===secF)&&(!q||(n.title+' '+n.body).toLowerCase().includes(q)));
+  const show=list.slice(0,LIMIT);
+  document.getElementById('news-list').innerHTML=show.length?show.map(article).join(''):'<div class="empty">🗞️ 아직 실린 기사가 없어요</div>';
+  document.getElementById('ncount').textContent=list.length?`${list.length}건`:'';
+  document.getElementById('news-more').style.display=list.length>LIMIT?'block':'none';
+  const open=NEWS.filter(n=>n.section==='추적 중');
+  const box=document.getElementById('open-cases');
+  if(open.length){ box.style.display='block'; document.getElementById('case-list').innerHTML=open.map(n=>`<div class="case"><b>${esc(n.title)}</b><span class="ndate">${dateK(n.date)}</span></div>`).join(''); }
+  else box.style.display='none';
+}
+async function loadNews(){
+  try{ const r=await fetch(APPLY_URL+'?news=1&t='+Date.now(),{cache:'no-store'}); NEWS=await r.json();
+    NEWS.forEach(n=>n.date=normDate(n.date)); NEWS.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||0); renderNews(); }
+  catch(e){ document.getElementById('news-list').innerHTML='<div class="empty">신문을 불러오지 못했어요. 잠시 후 새로고침해 주세요.</div>'; }
+}
+document.getElementById('sec-chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');secF=b.dataset.s;LIMIT=20;renderNews();});
+document.getElementById('more-btn').addEventListener('click',()=>{LIMIT+=20;renderNews();});
+loadNews();
+</script>
+
+    </article>
+<div class="pager"><a class="prev" href="changes.html"><small>‹ 이전</small>🔄 9.17 이전 분들께</a><a class="next" href="world.html"><small>다음 ›</small>📕 이 세계는?</a></div>
+  </div>
+</main>
+<script src="site.js?v=20260920e" defer></script>
+</body>
+</html>

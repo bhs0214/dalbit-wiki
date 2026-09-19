@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260920c">
+<link rel="stylesheet" href="style.css?v=20260920e">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -26,7 +26,7 @@
 <div class="scrim"></div>
 <aside class="side">
   <a class="ws" href="index.html"><span class="m">🌕</span><span>달빛여관 (達光旅館)<small>영물세계 · 세계관</small></span></a>
-  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class=""><span class="i">👥</span>인명부 · 신청</a><a href="changes.html" class=""><span class="i">🔄</span>9.17 이전 분들께</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
+  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class=""><span class="i">👥</span>인명부 · 신청</a><a href="changes.html" class=""><span class="i">🔄</span>9.17 이전 분들께</a><div class="grp">소식</div><a href="news.html" class=""><span class="i">🗞️</span>중앙 영물 신문</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
   <div class="side-foot"><a href="index.html">달빛여관 (達光旅館)</a><a class="adm" href="admin.html" title="관리">🗝</a></div>
 </aside>
 <main>
@@ -55,7 +55,7 @@
 <h2>🗺 가이아 대륙</h2>
 <p><img alt="가이아 대륙 지도" src="map.jpg" loading="lazy" decoding="async" width="1000" height="751"></p>
 <hr>
-<h2>📖 어디부터 읽을까요</h2>
+<div class="teaser" id="teaser" style="display:none"><div class="th"><span>🗞️ 중앙 영물 신문</span><a href="news.html">전체 보기 →</a></div><div id="teaser-list"></div></div><script>(async()=>{try{const r=await fetch("https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5jCg_V0ncwXQgCrxczcI5Qnzvo0DJDGEv1umaStNCaBTgAf7/exec?news=1&t="+Date.now(),{cache:"no-store"});const nd=d=>{d=String(d||"").trim();if(/^\d{4}-\d{2}-\d{2}/.test(d))return d.slice(0,10);const t=new Date(d);return isNaN(t)?d:t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");};const n=(await r.json()).map(x=>(x.date=nd(x.date),x)).sort((a,b)=>(b.date||"").localeCompare(a.date||""));const open=n.filter(x=>x.section==="추적 중").slice(0,2), latest=n.filter(x=>x.section!=="추적 중").slice(0,3); const pick=[...open,...latest]; if(!pick.length)return;const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));const sc={"특종":"s-top","속보":"s-flash","기획":"s-feat","생활":"s-life","추적 중":"s-open","해결":"s-done","공지":"s-notice"};document.getElementById("teaser-list").innerHTML=pick.map(x=>`<div class="ti"><span class="sec ${sc[x.section]||"s-life"}">${esc(x.section)}</span><a href="news.html">${esc(x.title)}</a></div>`).join("");document.getElementById("teaser").style.display="block";}catch(e){}})();</script><h2>📖 어디부터 읽을까요</h2>
 <h3>바로 시작하고 싶다면</h3>
 <div class="quote"><p><a class="xl" href="make.html">✍️ 캐릭터 만들기</a> 한 페이지만 읽으시면 됩니다. 샘플 캐릭터도 있어요.</p></div>
 <h3>이미 하고 계셨다면</h3>
@@ -65,11 +65,11 @@
 <h3>세계가 궁금하다면</h3>
 <div class="tbl"><table><thead><tr><th>페이지</th><th>내용</th></tr></thead><tbody><tr><td><a class="xl" href="world.html">📕 이 세계는?</a></td><td>영물 · 요괴 · 무명이 무엇인가</td></tr><tr><td><a class="xl" href="death.html">📗 죽음과 책</a></td><td>죽으면 어떻게 되는가</td></tr><tr><td><a class="xl" href="artifact.html">📘 법기</a></td><td>이 세계의 핵심. 가장 중요한 페이지</td></tr><tr><td><a class="xl" href="human.html">🤝 인간과 계약</a></td><td>인간 캐릭터를 하려면 반드시</td></tr><tr><td><a class="xl" href="city.html">🗺 도시 안내</a></td><td>어디서 왔고, 어디로 갈 것인가</td></tr><tr><td><a class="xl" href="inn.html">🏮 달빛여관</a></td><td>이 이야기가 시작되는 곳</td></tr><tr><td><a class="xl" href="hunt.html">⚔️ 사냥과 세력</a></td><td>무엇을 하며 사는가</td></tr><tr><td><a class="xl" href="deep.html">📚 심화 설정</a></td><td>더 깊이 파고들고 싶은 분만</td></tr></tbody></table></div>
 <hr>
-<div class="quote"><p><em>&quot;달빛이 설(說)을 비출 때 영물들은 피어난다.</em><br class="sb"> <em>이야기가 있는 자에게는 이름이 남는다.&quot;</em></p></div><div class="children"><a class="child" href="make.html"><span class="i">✍️</span><span class="t">캐릭터 만들기</span></a><a class="child" href="characters.html"><span class="i">👥</span><span class="t">인명부 · 신청</span></a><a class="child" href="changes.html"><span class="i">🔄</span><span class="t">9.17 이전 분들께</span></a><a class="child" href="world.html"><span class="i">📕</span><span class="t">이 세계는?</span></a><a class="child" href="death.html"><span class="i">📗</span><span class="t">죽음과 책</span></a><a class="child" href="artifact.html"><span class="i">📘</span><span class="t">법기 (法器)</span></a><a class="child" href="human.html"><span class="i">🤝</span><span class="t">인간과 계약</span></a><a class="child" href="city.html"><span class="i">🗺</span><span class="t">도시 안내</span></a><a class="child" href="inn.html"><span class="i">🏮</span><span class="t">달빛여관</span></a><a class="child" href="hunt.html"><span class="i">⚔️</span><span class="t">사냥과 세력</span></a><a class="child" href="deep.html"><span class="i">📚</span><span class="t">심화 설정</span></a></div>
+<div class="quote"><p><em>&quot;달빛이 설(說)을 비출 때 영물들은 피어난다.</em><br class="sb"> <em>이야기가 있는 자에게는 이름이 남는다.&quot;</em></p></div><div class="children"><a class="child" href="make.html"><span class="i">✍️</span><span class="t">캐릭터 만들기</span></a><a class="child" href="characters.html"><span class="i">👥</span><span class="t">인명부 · 신청</span></a><a class="child" href="changes.html"><span class="i">🔄</span><span class="t">9.17 이전 분들께</span></a><a class="child" href="news.html"><span class="i">🗞️</span><span class="t">중앙 영물 신문</span></a><a class="child" href="world.html"><span class="i">📕</span><span class="t">이 세계는?</span></a><a class="child" href="death.html"><span class="i">📗</span><span class="t">죽음과 책</span></a><a class="child" href="artifact.html"><span class="i">📘</span><span class="t">법기 (法器)</span></a><a class="child" href="human.html"><span class="i">🤝</span><span class="t">인간과 계약</span></a><a class="child" href="city.html"><span class="i">🗺</span><span class="t">도시 안내</span></a><a class="child" href="inn.html"><span class="i">🏮</span><span class="t">달빛여관</span></a><a class="child" href="hunt.html"><span class="i">⚔️</span><span class="t">사냥과 세력</span></a><a class="child" href="deep.html"><span class="i">📚</span><span class="t">심화 설정</span></a></div>
     </article>
 <div class="pager"><span class="sp"></span><a class="next" href="make.html"><small>다음 ›</small>✍️ 캐릭터 만들기</a></div>
   </div>
 </main>
-<script src="site.js?v=20260920c" defer></script>
+<script src="site.js?v=20260920e" defer></script>
 </body>
 </html>
