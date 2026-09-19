@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260918d">
+<link rel="stylesheet" href="style.css?v=20260920c">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -71,10 +71,11 @@
 
 <script>
 // APPLY_URL 은 characters.html 과 같은 주소입니다 (빌드 시 자동으로 채워짐)
-const APPLY_URL = 'https://script.google.com/macros/s/AKfycbzknl32hDnlFwvh5s_QBsjnWETX7sfF4QtKF6TXy7I8RKPisiBQiIIATof9LXlYdXgN/exec';
+const APPLY_URL = 'https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5jCg_V0ncwXQgCrxczcI5Qnzvo0DJDGEv1umaStNCaBTgAf7/exec';
 const STATUSES = ['심사중','활동중','휴면','소멸','반려'];
-const FIELDS = [['name','이름'],['owner','오너'],['emoji','이모지'],['kind','종족'],['origin','출신'],['motif','모티프'],['affiliation','소속'],['base','거점'],['role','직책'],['artifact','법기'],['rank','랭크'],['look','외형'],['story','이야기'],['artifactDesc','법기설명'],['line','한줄']];
-const LONG = new Set(['look','story','artifactDesc']);
+const FIELDS = [['name','이름'],['owner','오너'],['emoji','이모지'],['kind','종족'],['origin','출신'],['motif','모티프'],['age','나이'],['gender','성별'],['partner','계약 상대 (인간)'],['affiliation','소속'],['base','거점'],['role','직책'],['artifact','법기'],['rank','랭크'],['look','외형'],['personality','성격'],['story','이야기'],['artifactDesc','법기설명'],['skills','술식 · 능력'],['relations','관계'],['line','한줄'],['image','이미지 주소']];
+const LONG = new Set(['look','personality','story','artifactDesc','skills','relations']);
+const okImg=u=>/^https:\/\/(drive\.google\.com|lh3\.googleusercontent\.com|[\w.-]+\.githubusercontent\.com)\//.test(u||'');
 let ITEMS = [], stF = '심사중', KEY = '';
 const $ = id => document.getElementById(id);
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -103,17 +104,22 @@ function card(c){
   const who = c.kind==='인간' ? '인간' : [c.origin, c.motif].filter(Boolean).join(' · ');
   const where = [c.affiliation, c.role, c.base].filter(Boolean).join(' · ');
   const btn = (s, label, cls='') => c.status===s ? '' : `<button class="abtn ${cls}" data-act="status" data-row="${c.row}" data-s="${s}">${label}</button>`;
+  const ag=[c.age,c.gender].filter(Boolean).join(' · ');
+  const img=okImg(c.image);
+  const line=(label,v)=>v?`<div><b>${label}</b> ${esc(v)}</div>`:'';
   return `<div class="acard" id="row-${c.row}">
     <div class="ahead">
-      <div class="aemoji">${esc(c.emoji||'🌙')}</div>
+      <div class="aemoji${img?' has-img':''}">${img?`<img src="${esc(c.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:esc(c.emoji||'🌙')}</div>
       <div class="atitle"><b>${esc(c.name)}</b> ${badge(c.status)} <span class="arank">${esc(c.rank||'')}</span>
-        <div class="ameta">${esc(c.kind||'')} · ${esc(who)}${where?' · '+esc(where):''} · by ${esc(c.owner)} <span class="adate">${esc(c.date)}</span></div></div>
+        <div class="ameta">${esc(c.kind||'')} · ${esc(who)}${ag?' · '+esc(ag):''}${where?' · '+esc(where):''} · by ${esc(c.owner)} <span class="adate">${esc(c.date)}</span></div>
+        ${c.kind==='인간'&&c.partner?`<div class="ameta">🤝 계약 — ${esc(c.partner)}</div>`:''}</div>
     </div>
     <div class="abody">
-      <div><b>법기</b> ${esc(c.artifact)} — ${esc(c.artifactDesc)}</div>
-      <div><b>외형</b> ${esc(c.look)}</div>
-      <div><b>${c.kind==='인간'?'왜 계약했는가':'이야기'}</b> ${esc(c.story)}</div>
-      ${c.line?`<div><b>한 줄</b> ${esc(c.line)}</div>`:''}
+      ${line('법기', c.artifact + (c.artifactDesc?' — '+c.artifactDesc:''))}
+      ${line('외형', c.look)}${line('성격', c.personality)}
+      ${line(c.kind==='인간'?'왜 계약했는가':'이야기', c.story)}
+      ${line('술식', c.skills)}${line('관계', c.relations)}${line('한 줄', c.line)}
+      ${c.image&&!img?line('이미지', c.image):''}
     </div>
     <div class="abtns">
       ${btn('활동중','✓ 승인 (활동중)','primary')}${btn('반려','반려')}${btn('휴면','휴면')}${btn('소멸','소멸 (책으로)')}
@@ -127,7 +133,22 @@ function editForm(c){
   const f = FIELDS.map(([k,label]) => LONG.has(k)
     ? `<div class="field"><label>${label}</label><textarea name="${k}">${esc(c[k])}</textarea></div>`
     : `<div class="field"><label>${label}</label><input name="${k}" value="${esc(c[k])}"></div>`).join('');
-  return `<form class="form" data-row="${c.row}">${f}<div class="abtns"><button class="abtn primary" type="submit">저장</button><button class="abtn" type="button" data-act="cancel" data-row="${c.row}">취소</button></div><div class="msg"></div></form>`;
+  return `<form class="form" data-row="${c.row}">${f}
+    <div class="field"><label>이미지 바꾸기 <small>(선택)</small></label><input type="file" name="imagefile" accept="image/*"><div class="hint">고르면 저장할 때 드라이브에 새로 올라가고 주소가 바뀝니다.</div></div>
+    <div class="abtns"><button class="abtn primary" type="submit">저장</button><button class="abtn" type="button" data-act="cancel" data-row="${c.row}">취소</button></div><div class="msg"></div></form>`;
+}
+function shrink(file){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file); const im=new Image();
+    im.onload=()=>{ URL.revokeObjectURL(url);
+      const MAX=1000, s=Math.min(1, MAX/Math.max(im.width,im.height));
+      const cv=document.createElement('canvas'); cv.width=Math.round(im.width*s); cv.height=Math.round(im.height*s);
+      const g=cv.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,cv.width,cv.height); g.drawImage(im,0,0,cv.width,cv.height);
+      const keepPng=file.type==='image/png'&&file.size<400*1024;
+      const dataUrl=keepPng?cv.toDataURL('image/png'):cv.toDataURL('image/jpeg',0.86);
+      res({data:dataUrl.split(',')[1], type:keepPng?'image/png':'image/jpeg'}); };
+    im.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('이미지를 읽을 수 없어요')); };
+    im.src=url; });
 }
 async function setStatus(row, s){
   const c = ITEMS.find(x=>x.row===row); if(!c) return;
@@ -154,10 +175,12 @@ $('alist').addEventListener('click', async e => {
 });
 $('alist').addEventListener('submit', async e => {
   e.preventDefault(); const f = e.target; const row = +f.dataset.row;
-  const fields = Object.fromEntries(new FormData(f).entries());
+  const fields = Object.fromEntries(new FormData(f).entries()); delete fields.imagefile;
   const msg = f.querySelector('.msg'); msg.textContent = '저장 중…'; msg.className = 'msg';
+  const file = f.elements.imagefile && f.elements.imagefile.files[0];
+  if(file){ try{ const im = await shrink(file); fields.imageData = im.data; fields.imageType = im.type; }catch(err){ msg.textContent = err.message; msg.className='msg err'; return; } }
   const d = await api({action:'update', row, fields}).catch(()=>({ok:false,error:'net'}));
-  if(d.ok){ const c = ITEMS.find(x=>x.row===row); Object.assign(c, fields); render(); }
+  if(d.ok){ const c = ITEMS.find(x=>x.row===row); delete fields.imageData; delete fields.imageType; if(d.image) fields.image = d.image; Object.assign(c, fields); render(); }
   else { msg.textContent = '실패: '+d.error; msg.className = 'msg err'; }
 });
 $('st-chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove('on')); b.classList.add('on'); stF = b.dataset.s; render(); });
@@ -176,6 +199,6 @@ try{ const k = sessionStorage.getItem('dalbit-admin-key'); if(k) login(k); }catc
 
   </div>
 </main>
-<script src="site.js?v=20260918d" defer></script>
+<script src="site.js?v=20260920c" defer></script>
 </body>
 </html>

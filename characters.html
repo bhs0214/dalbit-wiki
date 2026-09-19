@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260918d">
+<link rel="stylesheet" href="style.css?v=20260920c">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -58,7 +58,7 @@
   <button class="chip" data-a="달빛여관">달빛여관</button>
   <button class="chip" data-a="무소속">무소속</button>
 </div>
-<div class="sbox"><span>🔍</span><input id="q" placeholder="이름 · 무엇이었나 · 법기 검색" oninput="render()"></div>
+<div class="sbox"><span>🔍</span><input id="q" placeholder="이름 · 무엇이었나 · 법기 · 오너 검색" oninput="render()"></div>
 <div class="count" id="count"></div>
 
 <div id="list" class="clist"><div class="empty">불러오는 중…</div></div>
@@ -74,7 +74,7 @@
 <form class="form" id="apply-form" autocomplete="off">
   <div class="desc">
     처음이시면 <a href="make.html">캐릭터 만들기</a>를 먼저 읽어보세요. 샘플 캐릭터도 있어요.<br>
-    신청하면 운영진 확인 후 인명부에 올라갑니다.
+    신청하면 운영진 확인 후 인명부에 올라갑니다. <b>*</b> 표시만 필수예요.
   </div>
 
   <div class="fsec">기본</div>
@@ -94,6 +94,11 @@
     🤝 인간은 <b>계약 상대(영물/요괴 캐릭터)</b>가 필요합니다. 아직 없다면 달빛여관에서 구하시면 돼요 — 원래 그런 곳이니까요.
     <a href="human.html">인간과 계약 →</a>
   </div>
+  <div class="field" id="partner-row" style="display:none">
+    <label>계약 상대 *</label>
+    <input name="partner" id="f-partner" maxlength="60" placeholder="예) 누렁 (정식 계약) · 아직 구하는 중">
+    <div class="hint">계약한 캐릭터 이름과 계약 종류(정식/금기). 아직 없으면 "구하는 중"이라고 적어도 돼요.</div>
+  </div>
   <div class="row2" id="origin-row">
     <div class="field">
       <label>출신 *</label>
@@ -105,10 +110,24 @@
     </div>
     <div class="field"><label>무엇이었나요 *</label><input name="motif" id="f-motif" maxlength="20" placeholder="예) 개, 밧줄, 해태"></div>
   </div>
+  <div class="row2">
+    <div class="field"><label>나이 *</label><input name="age" maxlength="30" required placeholder="예) 겉보기 20대 · 죽은 지 300년"></div>
+    <div class="field"><label>성별 *</label><input name="gender" maxlength="20" required placeholder="예) 남 · 여 · 무성 · 비공개"></div>
+  </div>
   <div class="field">
     <label>외형 *</label>
     <textarea name="look" maxlength="400" required placeholder="인간의 모습 + 남은 고유 신체가 있다면. 예) 스무 살 안팎의 청년. 귀 끝이 조금 뾰족하다."></textarea>
     <div class="hint">영물도 요괴도 인간의 모습입니다. 꼬리·귀·뿔 정도가 남을 뿐이에요.</div>
+  </div>
+  <div class="field">
+    <label>성격 *</label>
+    <textarea name="personality" maxlength="400" required placeholder="예) 느긋하고 사람을 잘 따른다. 기다리는 건 잘하지만 먼저 다가가진 못한다."></textarea>
+  </div>
+  <div class="field">
+    <label>캐릭터 이미지 <small>(선택 · 10MB 이하)</small></label>
+    <input type="file" name="imagefile" id="f-image" accept="image/*">
+    <div class="img-prev" id="img-prev" style="display:none"><img alt="미리보기"><button type="button" class="abtn" id="img-clear">✕ 빼기</button></div>
+    <div class="hint">그림·사진 한 장. 자동으로 줄여서 저장돼요.</div>
   </div>
 
   <div class="fsec">소속</div>
@@ -152,11 +171,21 @@
     <textarea name="artifactDesc" maxlength="500" required placeholder="무엇인가 · 왜 소중했는가 · 무엇을 할 수 있는가"></textarea>
     <div class="hint">법기는 능력이 아니라 이야기입니다. "왜 소중했는가"를 먼저 적어보세요. 낮은 랭크가 약한 캐릭터라는 뜻은 아니에요.</div>
   </div>
+  <div class="field">
+    <label>술식 · 능력 <small>(선택 · 심화 설정을 쓰는 분만)</small></label>
+    <textarea name="skills" maxlength="600" placeholder="예) 백호계 신체강화 · 대령(對靈) 위주. 몰라도 캐릭터를 만드는 데 문제없어요."></textarea>
+    <div class="hint">양기·음기·오행 같은 건 <a href="deep.html">심화 설정</a>에 있어요. 비워두셔도 됩니다.</div>
+  </div>
 
   <div class="fsec">이야기</div>
   <div class="field">
     <label id="story-label">이야기 *</label>
     <textarea name="story" id="f-story" maxlength="800" required placeholder="생전에 어떤 존재였고, 어떻게 죽었는가"></textarea>
+  </div>
+  <div class="field">
+    <label>관계 <small>(선택)</small></label>
+    <textarea name="relations" maxlength="500" placeholder="예) 시(豕) — 여관 식당에서 늘 마주치는 사이. 한서린 — 계약 상대."></textarea>
+    <div class="hint">다른 캐릭터와의 관계. 나중에 생기면 관리자에게 말해 추가할 수도 있어요.</div>
   </div>
   <div class="field"><label>한 줄 <small>(선택)</small></label><input name="line" maxlength="80" placeholder="이 캐릭터를 한 문장으로"></div>
 
@@ -178,12 +207,13 @@
 // 이 주소 하나로 신청(저장)과 인명부(읽기)를 모두 처리합니다.
 // 비어있으면: 신청 폼 비활성 + characters.json 을 대신 표시
 // ─────────────────────────────────────────────
-const APPLY_URL = 'https://script.google.com/macros/s/AKfycbzknl32hDnlFwvh5s_QBsjnWETX7sfF4QtKF6TXy7I8RKPisiBQiIIATof9LXlYdXgN/exec';
+const APPLY_URL = 'https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5jCg_V0ncwXQgCrxczcI5Qnzvo0DJDGEv1umaStNCaBTgAf7/exec';
 
 let CHARS=[], kindF='전체', affF='전체';
 const KIND_EMOJI={영물:'🌕',요괴:'🌑',인간:'🧍'}, KIND_CLASS={영물:'k-yeong',요괴:'k-yo',인간:'k-human'};
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function note(t){const n=document.getElementById('src-note');if(!t){n.style.display='none';return;}n.textContent=t;n.style.display='block';}
+const okImg=u=>/^https:\/\/(drive\.google\.com|lh3\.googleusercontent\.com|[\w.-]+\.githubusercontent\.com)\//.test(u||'');
 
 async function loadChars(){
   if(APPLY_URL){
@@ -196,24 +226,32 @@ async function loadChars(){
 function card(c,lib){
   const kc=KIND_CLASS[c.kind]||'k-etc', em=c.emoji||KIND_EMOJI[c.kind]||'🌙';
   const who=c.kind==='인간'?'인간':(c.origin==='그 외'||!c.origin)?(c.motif||''):[c.origin,c.motif].filter(Boolean).join(' · ');
+  const ag=[c.age,c.gender].filter(Boolean).join(' · ');
   const where=[c.affiliation,c.role,c.base].filter(Boolean).join(' · ');
   const rank=c.rank?`<span class="cc-rank ${c.rank==='EX'?'ex':''}">${esc(c.rank)}</span>`:'';
   const st=c.status&&c.status!=='활동중'&&!lib?`<span class="cc-status">${esc(c.status)}</span>`:'';
+  const img=!lib&&okImg(c.image);
+  const avatar=lib?'📖':img?`<img src="${esc(c.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:esc(em);
+  const sec=(label,v)=>v?`<div class="cc-sec"><b>${label}</b>${esc(v)}</div>`:'';
+  const more=[
+    img?`<a class="cc-img" href="${esc(c.image)}" target="_blank" rel="noopener"><img src="${esc(c.image)}" alt="${esc(c.name)}" loading="lazy" referrerpolicy="no-referrer"></a>`:'',
+    sec('외형',c.look), sec('성격',c.personality),
+    sec(c.kind==='인간'?'왜 계약했는가':'이야기',c.story),
+    sec('법기',c.artifactDesc), sec('술식 · 능력',c.skills), sec('관계',c.relations)].join('');
   return `<div class="cc${(c.status==='휴면'||lib)?' dim':''}">
-    <div class="cc-head"><div class="cc-emoji">${lib?'📖':esc(em)}</div>
-      <div class="cc-title"><div class="cc-name">${esc(c.name)} ${rank}${st}</div><div class="cc-meta">${esc(who)}${where?' · '+esc(where):''}</div></div>
+    <div class="cc-head"><div class="cc-emoji${img?' has-img':''}">${avatar}</div>
+      <div class="cc-title"><div class="cc-name">${esc(c.name)} ${rank}${st}</div>
+        <div class="cc-meta">${esc(who)}${ag?' · '+esc(ag):''}${where?' · '+esc(where):''}</div>
+        ${c.kind==='인간'&&c.partner?`<div class="cc-meta">🤝 계약 — ${esc(c.partner)}</div>`:''}</div>
       <span class="cc-kind ${kc}">${esc(c.kind||'')}</span></div>
     ${c.artifact?`<div class="cc-art">⚔ 법기 — <b>${esc(c.artifact)}</b></div>`:''}
     ${c.line?`<div class="cc-line">${esc(c.line)}</div>`:''}
-    ${(c.look||c.story||c.artifactDesc)?`<details><summary>더 보기</summary>
-      ${c.look?`<div class="cc-sec"><b>외형</b>${esc(c.look)}</div>`:''}
-      ${c.story?`<div class="cc-sec"><b>${c.kind==='인간'?'왜 계약했는가':'이야기'}</b>${esc(c.story)}</div>`:''}
-      ${c.artifactDesc?`<div class="cc-sec"><b>법기</b>${esc(c.artifactDesc)}</div>`:''}</details>`:''}
+    ${more?`<details><summary>더 보기</summary>${more}</details>`:''}
     ${c.owner?`<div class="cc-owner">by ${esc(c.owner)}</div>`:''}</div>`;
 }
 function render(){
   const q=(document.getElementById('q').value||'').trim().toLowerCase();
-  const m=c=>(kindF==='전체'||c.kind===kindF)&&(affF==='전체'||c.affiliation===affF)&&(!q||[c.name,c.motif,c.artifact,c.role,c.owner].filter(Boolean).join(' ').toLowerCase().includes(q));
+  const m=c=>(kindF==='전체'||c.kind===kindF)&&(affF==='전체'||c.affiliation===affF)&&(!q||[c.name,c.motif,c.artifact,c.role,c.owner,c.partner].filter(Boolean).join(' ').toLowerCase().includes(q));
   const act=CHARS.filter(c=>(c.status||'활동중')!=='소멸'&&m(c)), gone=CHARS.filter(c=>c.status==='소멸'&&m(c));
   document.getElementById('list').innerHTML=act.length?act.map(c=>card(c,false)).join(''):'<div class="empty">🌙 아직 등록된 존재가 없어요<br>아래에서 첫 캐릭터를 신청해보세요</div>';
   document.getElementById('count').textContent=act.length?`${act.length}명`:'';
@@ -223,27 +261,54 @@ function render(){
 document.getElementById('kind-chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');kindF=b.dataset.k;render();});
 document.getElementById('aff-chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');affF=b.dataset.a;render();});
 
+// 종족에 따라 칸 바꾸기
 const kindSel=document.getElementById('f-kind');
 function onKind(){
   const h=kindSel.value==='인간';
   document.getElementById('origin-row').style.display=h?'none':'flex';
   document.getElementById('human-note').style.display=h?'block':'none';
-  document.getElementById('f-origin').required=!h; document.getElementById('f-motif').required=!h;
+  document.getElementById('partner-row').style.display=h?'block':'none';
+  document.getElementById('f-origin').required=!h; document.getElementById('f-motif').required=!h; document.getElementById('f-partner').required=h;
   document.getElementById('story-label').textContent=h?'왜 계약했는가 *':'이야기 *';
   document.getElementById('f-story').placeholder=h?'살아있는 인간이 왜 이 세계로 넘어왔는가. 무엇을 걸었는가.':'생전에 어떤 존재였고, 어떻게 죽었는가';
 }
 kindSel.addEventListener('change',onKind); onKind();
 
+// 이미지: 브라우저에서 줄여서(긴 변 1000px, JPEG) base64로 보냄
+let IMG=null;   // {data, type}
+const fImg=document.getElementById('f-image'), prev=document.getElementById('img-prev');
+function shrink(file){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file); const im=new Image();
+    im.onload=()=>{ URL.revokeObjectURL(url);
+      const MAX=1000, s=Math.min(1, MAX/Math.max(im.width,im.height));
+      const cv=document.createElement('canvas'); cv.width=Math.round(im.width*s); cv.height=Math.round(im.height*s);
+      const g=cv.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,cv.width,cv.height); g.drawImage(im,0,0,cv.width,cv.height);
+      const keepPng=file.type==='image/png'&&file.size<400*1024;   // 작은 PNG(투명 그림)는 그대로
+      const dataUrl=keepPng?cv.toDataURL('image/png'):cv.toDataURL('image/jpeg',0.86);
+      res({data:dataUrl.split(',')[1], type:keepPng?'image/png':'image/jpeg', url:dataUrl}); };
+    im.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('이미지를 읽을 수 없어요')); };
+    im.src=url; });
+}
+fImg.addEventListener('change',async()=>{
+  const f=fImg.files[0]; if(!f){IMG=null;prev.style.display='none';return;}
+  if(f.size>10*1024*1024){ alert('10MB 이하 이미지만 올릴 수 있어요.'); fImg.value=''; return; }
+  try{ IMG=await shrink(f); prev.querySelector('img').src=IMG.url; prev.style.display='flex'; }
+  catch(e){ alert(e.message); fImg.value=''; IMG=null; prev.style.display='none'; }
+});
+document.getElementById('img-clear').addEventListener('click',()=>{ fImg.value=''; IMG=null; prev.style.display='none'; });
+
 const form=document.getElementById('apply-form'), formMsg=document.getElementById('form-msg'), submitBtn=document.getElementById('submit-btn');
 if(!APPLY_URL){submitBtn.disabled=true;formMsg.className='msg';formMsg.textContent='⚠️ 신청함이 아직 연결되지 않았어요. (관리자: 설정가이드 참고)';}
 form.addEventListener('submit',async e=>{
   e.preventDefault(); if(!APPLY_URL)return;
-  const d=Object.fromEntries(new FormData(form).entries());
-  if(d.kind==='인간'){d.origin='인간';d.motif='인간';}
+  const d=Object.fromEntries(new FormData(form).entries()); delete d.imagefile;
+  if(d.kind==='인간'){d.origin='인간';d.motif='인간';} else d.partner='';
+  if(IMG){ d.imageData=IMG.data; d.imageType=IMG.type; }
   d._type='character'; d._date=new Date().toLocaleString('ko-KR');
-  submitBtn.disabled=true; submitBtn.textContent='보내는 중...';
+  submitBtn.disabled=true; submitBtn.textContent=IMG?'이미지와 함께 보내는 중...':'보내는 중...';
   try{ await fetch(APPLY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)});
-    formMsg.className='msg ok'; formMsg.textContent='✦ 신청이 접수됐어요! 운영진 확인 후 인명부에 올라갑니다.'; form.reset(); onKind();
+    formMsg.className='msg ok'; formMsg.textContent='✦ 신청이 접수됐어요! 운영진 확인 후 인명부에 올라갑니다.'; form.reset(); onKind(); IMG=null; prev.style.display='none';
   }catch(err){ formMsg.className='msg err'; formMsg.textContent='전송에 실패했어요. 잠시 후 다시 시도해주세요.'; }
   submitBtn.disabled=false; submitBtn.textContent='✦ 신청하기';
 });
@@ -254,6 +319,6 @@ loadChars();
 <div class="pager"><a class="prev" href="make.html"><small>‹ 이전</small>✍️ 캐릭터 만들기</a><a class="next" href="changes.html"><small>다음 ›</small>🔄 9.17 이전 분들께</a></div>
   </div>
 </main>
-<script src="site.js?v=20260918d" defer></script>
+<script src="site.js?v=20260920c" defer></script>
 </body>
 </html>
