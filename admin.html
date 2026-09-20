@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260920e">
+<link rel="stylesheet" href="style.css?v=20260920g">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -107,8 +107,16 @@
 // APPLY_URL 은 characters.html 과 같은 주소입니다 (빌드 시 자동으로 채워짐)
 const APPLY_URL = 'https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5jCg_V0ncwXQgCrxczcI5Qnzvo0DJDGEv1umaStNCaBTgAf7/exec';
 const STATUSES = ['심사중','활동중','휴면','소멸','반려'];
-const FIELDS = [['name','이름'],['owner','오너'],['emoji','이모지'],['kind','종족'],['origin','출신'],['motif','모티프'],['age','나이'],['gender','성별'],['partner','계약 상대 (인간)'],['affiliation','소속'],['base','거점'],['role','직책'],['artifact','법기'],['rank','랭크'],['look','외형'],['personality','성격'],['story','이야기'],['artifactDesc','법기설명'],['skills','술식 · 능력'],['relations','관계'],['line','한줄'],['image','이미지 주소']];
-const LONG = new Set(['look','personality','story','artifactDesc','skills','relations']);
+const FIELDS = [['name','이름'],['owner','오너'],['emoji','이모지'],['kind','종족'],['origin','출신'],['motif','모티프'],['age','나이'],['gender','성별'],['partner','계약 상대 (인간)'],['affiliation','소속'],['base','거점'],['role','직책'],['look','외형'],['personality','성격'],['story','이야기'],
+  ['artifact','법기 1'],['rank','랭크 1'],['artifactDesc','법기 1 설명'],['artifactImage','법기 1 사진 주소'],
+  ['artifact2','법기 2'],['rank2','랭크 2'],['artifactDesc2','법기 2 설명'],['artifactImage2','법기 2 사진 주소'],
+  ['artifact3','법기 3'],['rank3','랭크 3'],['artifactDesc3','법기 3 설명'],['artifactImage3','법기 3 사진 주소'],
+  ['skills','술식 1'],['skillDesc','술식 1 설명'],['skills2','술식 2'],['skillDesc2','술식 2 설명'],['skills3','술식 3'],['skillDesc3','술식 3 설명'],
+  ['relations','관계'],['line','한줄'],['image','캐릭터 이미지 주소']];
+const LONG = new Set(['look','personality','story','artifactDesc','artifactDesc2','artifactDesc3','skillDesc','skillDesc2','skillDesc3','relations']);
+function skillsOf(c){ return [[c.skills,c.skillDesc],[c.skills2,c.skillDesc2],[c.skills3,c.skillDesc3]].filter(s=>s[0]||s[1]).map(([name,desc])=>({name,desc})); }
+const IMG_KEYS = [['image','캐릭터 이미지'],['artifactImage','법기 1 사진'],['artifactImage2','법기 2 사진'],['artifactImage3','법기 3 사진']];
+function artifactsOf(c){ return [[c.artifact,c.rank,c.artifactDesc,c.artifactImage],[c.artifact2,c.rank2,c.artifactDesc2,c.artifactImage2],[c.artifact3,c.rank3,c.artifactDesc3,c.artifactImage3]].filter(a=>a[0]).map(([name,rank,desc,img])=>({name,rank,desc,img})); }
 const okImg=u=>/^https:\/\/(drive\.google\.com|lh3\.googleusercontent\.com|[\w.-]+\.githubusercontent\.com)\//.test(u||'');
 let ITEMS = [], stF = '심사중', KEY = '';
 const $ = id => document.getElementById(id);
@@ -149,10 +157,10 @@ function card(c){
         ${c.kind==='인간'&&c.partner?`<div class="ameta">🤝 계약 — ${esc(c.partner)}</div>`:''}</div>
     </div>
     <div class="abody">
-      ${line('법기', c.artifact + (c.artifactDesc?' — '+c.artifactDesc:''))}
+      ${artifactsOf(c).map((a,i,arr)=>line('법기'+(arr.length>1?' '+(i+1):''), a.name+(a.rank?' ('+a.rank+')':'')+(a.desc?' — '+a.desc:'')+(okImg(a.img)?' 📷':''))).join('')}
       ${line('외형', c.look)}${line('성격', c.personality)}
       ${line(c.kind==='인간'?'왜 계약했는가':'이야기', c.story)}
-      ${line('술식', c.skills)}${line('관계', c.relations)}${line('한 줄', c.line)}
+      ${skillsOf(c).map((s,i,arr)=>line('술식'+(arr.length>1?' '+(i+1):''), (s.name||'')+(s.desc?' — '+s.desc:''))).join('')}${line('관계', c.relations)}${line('한 줄', c.line)}
       ${c.image&&!img?line('이미지', c.image):''}
     </div>
     <div class="abtns">
@@ -167,8 +175,9 @@ function editForm(c){
   const f = FIELDS.map(([k,label]) => LONG.has(k)
     ? `<div class="field"><label>${label}</label><textarea name="${k}">${esc(c[k])}</textarea></div>`
     : `<div class="field"><label>${label}</label><input name="${k}" value="${esc(c[k])}"></div>`).join('');
+  const imgs = IMG_KEYS.map(([k,label]) => `<div class="field"><label>${label} 바꾸기 <small>(선택)</small></label><input type="file" name="file_${k}" accept="image/*"></div>`).join('');
   return `<form class="form" data-row="${c.row}">${f}
-    <div class="field"><label>이미지 바꾸기 <small>(선택)</small></label><input type="file" name="imagefile" accept="image/*"><div class="hint">고르면 저장할 때 드라이브에 새로 올라가고 주소가 바뀝니다.</div></div>
+    <div class="fsec">사진 바꾸기</div>${imgs}<div class="hint">고르면 저장할 때 드라이브에 새로 올라가고 주소가 바뀝니다. 사진을 없애려면 위의 '사진 주소' 칸을 비우세요.</div>
     <div class="abtns"><button class="abtn primary" type="submit">저장</button><button class="abtn" type="button" data-act="cancel" data-row="${c.row}">취소</button></div><div class="msg"></div></form>`;
 }
 function shrink(file){
@@ -209,12 +218,12 @@ $('alist').addEventListener('click', async e => {
 });
 $('alist').addEventListener('submit', async e => {
   e.preventDefault(); const f = e.target; const row = +f.dataset.row;
-  const fields = Object.fromEntries(new FormData(f).entries()); delete fields.imagefile;
+  const fields = Object.fromEntries([...new FormData(f).entries()].filter(([k,v])=>!(v instanceof File)));
   const msg = f.querySelector('.msg'); msg.textContent = '저장 중…'; msg.className = 'msg';
-  const file = f.elements.imagefile && f.elements.imagefile.files[0];
-  if(file){ try{ const im = await shrink(file); fields.imageData = im.data; fields.imageType = im.type; }catch(err){ msg.textContent = err.message; msg.className='msg err'; return; } }
+  for(const [k] of IMG_KEYS){ const el=f.elements['file_'+k]; const file=el&&el.files[0]; if(!file) continue;
+    try{ const im = await shrink(file); fields[k+'Data'] = im.data; fields[k+'Type'] = im.type; }catch(err){ msg.textContent = err.message; msg.className='msg err'; return; } }
   const d = await api({action:'update', row, fields}).catch(()=>({ok:false,error:'net'}));
-  if(d.ok){ const c = ITEMS.find(x=>x.row===row); delete fields.imageData; delete fields.imageType; if(d.image) fields.image = d.image; Object.assign(c, fields); render(); }
+  if(d.ok){ const c = ITEMS.find(x=>x.row===row); for(const [k] of IMG_KEYS){ delete fields[k+'Data']; delete fields[k+'Type']; } Object.assign(fields, d.images||{}); Object.assign(c, fields); render(); }
   else { msg.textContent = '실패: '+d.error; msg.className = 'msg err'; }
 });
 $('st-chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove('on')); b.classList.add('on'); stF = b.dataset.s; render(); });
@@ -281,6 +290,6 @@ try{ const k = sessionStorage.getItem('dalbit-admin-key'); if(k) login(k); }catc
 
   </div>
 </main>
-<script src="site.js?v=20260920e" defer></script>
+<script src="site.js?v=20260920g" defer></script>
 </body>
 </html>

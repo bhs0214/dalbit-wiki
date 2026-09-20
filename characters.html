@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260920e">
+<link rel="stylesheet" href="style.css?v=20260920g">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -125,8 +125,8 @@
   </div>
   <div class="field">
     <label>캐릭터 이미지 <small>(선택 · 10MB 이하)</small></label>
-    <input type="file" name="imagefile" id="f-image" accept="image/*">
-    <div class="img-prev" id="img-prev" style="display:none"><img alt="미리보기"><button type="button" class="abtn" id="img-clear">✕ 빼기</button></div>
+    <input type="file" class="imgpick" data-key="image" accept="image/*">
+    <div class="img-prev" style="display:none"><img alt="미리보기"><button type="button" class="abtn img-clear">✕ 빼기</button></div>
     <div class="hint">그림·사진 한 장. 자동으로 줄여서 저장돼요.</div>
   </div>
 
@@ -153,29 +153,63 @@
     <div class="field"><label>직책 <small>(선택)</small></label><input name="role" maxlength="30" placeholder="예) 차사, 요리사, 잉어 가문"></div>
   </div>
 
-  <div class="fsec">법기</div>
-  <div class="row2">
-    <div class="field"><label>법기 이름 *</label><input name="artifact" maxlength="30" required placeholder="예) 낡은 목줄"></div>
-    <div class="field">
-      <label>랭크 *</label>
-      <select name="rank" required>
-        <option value="C" selected>C — 평범</option>
-        <option value="B">B — 평균</option>
-        <option value="A">A — 술식급</option>
-        <option value="EX">EX — 규격 외</option>
-      </select>
+  <div class="fsec">법기 <small>(보통 1개, 최대 3개)</small></div>
+
+  <div class="artblock" data-n="1">
+    <div class="row2">
+      <div class="field"><label>법기 이름 *</label><input name="artifact" maxlength="30" required placeholder="예) 낡은 목줄"></div>
+      <div class="field"><label>랭크 *</label>
+        <select name="rank" required><option value="C" selected>C — 평범</option><option value="B">B — 평균</option><option value="A">A — 술식급</option><option value="EX">EX — 규격 외</option></select></div>
     </div>
+    <div class="field"><label>법기 설명 *</label><textarea name="artifactDesc" maxlength="500" required placeholder="무엇인가 · 왜 소중했는가 · 무엇을 할 수 있는가"></textarea>
+      <div class="hint">법기는 능력이 아니라 이야기입니다. "왜 소중했는가"를 먼저 적어보세요. 낮은 랭크가 약한 캐릭터라는 뜻은 아니에요.</div></div>
+    <div class="field"><label>법기 사진 <small>(선택)</small></label><input type="file" class="imgpick" data-key="artifactImage" accept="image/*">
+      <div class="img-prev" style="display:none"><img alt="미리보기"><button type="button" class="abtn img-clear">✕ 빼기</button></div></div>
   </div>
-  <div class="field">
-    <label>법기 설명 *</label>
-    <textarea name="artifactDesc" maxlength="500" required placeholder="무엇인가 · 왜 소중했는가 · 무엇을 할 수 있는가"></textarea>
-    <div class="hint">법기는 능력이 아니라 이야기입니다. "왜 소중했는가"를 먼저 적어보세요. 낮은 랭크가 약한 캐릭터라는 뜻은 아니에요.</div>
+
+  <div class="artblock" data-n="2" style="display:none">
+    <div class="artblock-head"><b>두 번째 법기</b><button type="button" class="abtn art-remove" data-n="2">✕ 빼기</button></div>
+    <div class="row2">
+      <div class="field"><label>법기 이름</label><input name="artifact2" maxlength="30" placeholder="예) 어머니의 반지"></div>
+      <div class="field"><label>랭크</label>
+        <select name="rank2"><option value="C" selected>C — 평범</option><option value="B">B — 평균</option><option value="A">A — 술식급</option><option value="EX">EX — 규격 외</option></select></div>
+    </div>
+    <div class="field"><label>법기 설명</label><textarea name="artifactDesc2" maxlength="500" placeholder="무엇인가 · 왜 소중했는가 · 무엇을 할 수 있는가"></textarea></div>
+    <div class="field"><label>법기 사진 <small>(선택)</small></label><input type="file" class="imgpick" data-key="artifactImage2" accept="image/*">
+      <div class="img-prev" style="display:none"><img alt="미리보기"><button type="button" class="abtn img-clear">✕ 빼기</button></div></div>
   </div>
-  <div class="field">
-    <label>술식 · 능력 <small>(선택 · 심화 설정을 쓰는 분만)</small></label>
-    <textarea name="skills" maxlength="600" placeholder="예) 백호계 신체강화 · 대령(對靈) 위주. 몰라도 캐릭터를 만드는 데 문제없어요."></textarea>
-    <div class="hint">양기·음기·오행 같은 건 <a href="deep.html">심화 설정</a>에 있어요. 비워두셔도 됩니다.</div>
+
+  <div class="artblock" data-n="3" style="display:none">
+    <div class="artblock-head"><b>세 번째 법기</b><button type="button" class="abtn art-remove" data-n="3">✕ 빼기</button></div>
+    <div class="row2">
+      <div class="field"><label>법기 이름</label><input name="artifact3" maxlength="30"></div>
+      <div class="field"><label>랭크</label>
+        <select name="rank3"><option value="C" selected>C — 평범</option><option value="B">B — 평균</option><option value="A">A — 술식급</option><option value="EX">EX — 규격 외</option></select></div>
+    </div>
+    <div class="field"><label>법기 설명</label><textarea name="artifactDesc3" maxlength="500"></textarea></div>
+    <div class="field"><label>법기 사진 <small>(선택)</small></label><input type="file" class="imgpick" data-key="artifactImage3" accept="image/*">
+      <div class="img-prev" style="display:none"><img alt="미리보기"><button type="button" class="abtn img-clear">✕ 빼기</button></div></div>
   </div>
+  <div class="abtns"><button type="button" class="abtn" id="art-add">＋ 법기 추가</button></div>
+  <div class="hint">법기가 여럿이면 소멸했을 때 책이 장(章)으로 나뉩니다. <a href="artifact.html">법기 페이지</a> 참고.</div>
+
+  <div class="fsec">술식 · 능력 <small>(선택 · 심화 설정을 쓰는 분만 · 최대 3개)</small></div>
+  <div class="hint" style="margin:-4px 0 10px">양기·음기·오행 같은 건 <a href="deep.html">심화 설정</a>에 있어요. 몰라도 캐릭터를 만드는 데 문제없으니 비워두셔도 됩니다.</div>
+  <div class="artblock skillblock" data-n="1">
+    <div class="field"><label>술식 이름</label><input name="skills" maxlength="40" placeholder="예) 백호계 신체강화 · 조디악 스피킹"></div>
+    <div class="field"><label>설명</label><textarea name="skillDesc" maxlength="500" placeholder="무엇을 하는가 · 대령/대역/대국 어느 범위인가 · 대가나 제약이 있다면"></textarea></div>
+  </div>
+  <div class="artblock skillblock" data-n="2" style="display:none">
+    <div class="artblock-head"><b>두 번째 술식</b><button type="button" class="abtn skill-remove" data-n="2">✕ 빼기</button></div>
+    <div class="field"><label>술식 이름</label><input name="skills2" maxlength="40"></div>
+    <div class="field"><label>설명</label><textarea name="skillDesc2" maxlength="500"></textarea></div>
+  </div>
+  <div class="artblock skillblock" data-n="3" style="display:none">
+    <div class="artblock-head"><b>세 번째 술식</b><button type="button" class="abtn skill-remove" data-n="3">✕ 빼기</button></div>
+    <div class="field"><label>술식 이름</label><input name="skills3" maxlength="40"></div>
+    <div class="field"><label>설명</label><textarea name="skillDesc3" maxlength="500"></textarea></div>
+  </div>
+  <div class="abtns"><button type="button" class="abtn" id="skill-add">＋ 술식 추가</button></div>
 
   <div class="fsec">이야기</div>
   <div class="field">
@@ -214,6 +248,10 @@ const KIND_EMOJI={영물:'🌕',요괴:'🌑',인간:'🧍'}, KIND_CLASS={영물
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function note(t){const n=document.getElementById('src-note');if(!t){n.style.display='none';return;}n.textContent=t;n.style.display='block';}
 const okImg=u=>/^https:\/\/(drive\.google\.com|lh3\.googleusercontent\.com|[\w.-]+\.githubusercontent\.com)\//.test(u||'');
+// 법기 1~3 / 술식 1~3을 배열로
+function artifactsOf(c){ return [[c.artifact,c.rank,c.artifactDesc,c.artifactImage],[c.artifact2,c.rank2,c.artifactDesc2,c.artifactImage2],[c.artifact3,c.rank3,c.artifactDesc3,c.artifactImage3]]
+  .filter(a=>a[0]).map(([name,rank,desc,img])=>({name,rank,desc,img})); }
+function skillsOf(c){ return [[c.skills,c.skillDesc],[c.skills2,c.skillDesc2],[c.skills3,c.skillDesc3]].filter(s=>s[0]||s[1]).map(([name,desc])=>({name,desc})); }
 
 async function loadChars(){
   if(APPLY_URL){
@@ -228,30 +266,34 @@ function card(c,lib){
   const who=c.kind==='인간'?'인간':(c.origin==='그 외'||!c.origin)?(c.motif||''):[c.origin,c.motif].filter(Boolean).join(' · ');
   const ag=[c.age,c.gender].filter(Boolean).join(' · ');
   const where=[c.affiliation,c.role,c.base].filter(Boolean).join(' · ');
-  const rank=c.rank?`<span class="cc-rank ${c.rank==='EX'?'ex':''}">${esc(c.rank)}</span>`:'';
+  const arts=artifactsOf(c);
+  const rankTag=r=>r?`<span class="cc-rank ${r==='EX'?'ex':''}">${esc(r)}</span>`:'';
   const st=c.status&&c.status!=='활동중'&&!lib?`<span class="cc-status">${esc(c.status)}</span>`:'';
   const img=!lib&&okImg(c.image);
   const avatar=lib?'📖':img?`<img src="${esc(c.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:esc(em);
   const sec=(label,v)=>v?`<div class="cc-sec"><b>${label}</b>${esc(v)}</div>`:'';
+  const artSec=arts.map((a,i)=>`<div class="cc-sec"><b>법기${arts.length>1?' '+(i+1):''} — ${esc(a.name)} ${a.rank?'('+esc(a.rank)+')':''}</b>${okImg(a.img)?`<a class="cc-artimg" href="${esc(a.img)}" target="_blank" rel="noopener"><img src="${esc(a.img)}" alt="${esc(a.name)}" loading="lazy" referrerpolicy="no-referrer"></a>`:''}${esc(a.desc)}</div>`).join('');
   const more=[
     img?`<a class="cc-img" href="${esc(c.image)}" target="_blank" rel="noopener"><img src="${esc(c.image)}" alt="${esc(c.name)}" loading="lazy" referrerpolicy="no-referrer"></a>`:'',
     sec('외형',c.look), sec('성격',c.personality),
     sec(c.kind==='인간'?'왜 계약했는가':'이야기',c.story),
-    sec('법기',c.artifactDesc), sec('술식 · 능력',c.skills), sec('관계',c.relations)].join('');
+    artSec,
+    skillsOf(c).map((s,i,arr)=>`<div class="cc-sec"><b>술식${arr.length>1?' '+(i+1):''}${s.name?' — '+esc(s.name):''}</b>${esc(s.desc)}</div>`).join(''),
+    sec('관계',c.relations)].join('');
   return `<div class="cc${(c.status==='휴면'||lib)?' dim':''}">
     <div class="cc-head"><div class="cc-emoji${img?' has-img':''}">${avatar}</div>
-      <div class="cc-title"><div class="cc-name">${esc(c.name)} ${rank}${st}</div>
+      <div class="cc-title"><div class="cc-name">${esc(c.name)} ${rankTag(arts[0]?.rank||c.rank)}${st}</div>
         <div class="cc-meta">${esc(who)}${ag?' · '+esc(ag):''}${where?' · '+esc(where):''}</div>
         ${c.kind==='인간'&&c.partner?`<div class="cc-meta">🤝 계약 — ${esc(c.partner)}</div>`:''}</div>
       <span class="cc-kind ${kc}">${esc(c.kind||'')}</span></div>
-    ${c.artifact?`<div class="cc-art">⚔ 법기 — <b>${esc(c.artifact)}</b></div>`:''}
+    ${arts.length?`<div class="cc-art">⚔ 법기 — ${arts.map(a=>`<b>${esc(a.name)}</b>${arts.length>1&&a.rank?' <small>'+esc(a.rank)+'</small>':''}`).join(' · ')}</div>`:''}
     ${c.line?`<div class="cc-line">${esc(c.line)}</div>`:''}
     ${more?`<details><summary>더 보기</summary>${more}</details>`:''}
     ${c.owner?`<div class="cc-owner">by ${esc(c.owner)}</div>`:''}</div>`;
 }
 function render(){
   const q=(document.getElementById('q').value||'').trim().toLowerCase();
-  const m=c=>(kindF==='전체'||c.kind===kindF)&&(affF==='전체'||c.affiliation===affF)&&(!q||[c.name,c.motif,c.artifact,c.role,c.owner,c.partner].filter(Boolean).join(' ').toLowerCase().includes(q));
+  const m=c=>(kindF==='전체'||c.kind===kindF)&&(affF==='전체'||c.affiliation===affF)&&(!q||[c.name,c.motif,c.artifact,c.artifact2,c.artifact3,c.role,c.owner,c.partner].filter(Boolean).join(' ').toLowerCase().includes(q));
   const act=CHARS.filter(c=>(c.status||'활동중')!=='소멸'&&m(c)), gone=CHARS.filter(c=>c.status==='소멸'&&m(c));
   document.getElementById('list').innerHTML=act.length?act.map(c=>card(c,false)).join(''):'<div class="empty">🌙 아직 등록된 존재가 없어요<br>아래에서 첫 캐릭터를 신청해보세요</div>';
   document.getElementById('count').textContent=act.length?`${act.length}명`:'';
@@ -274,9 +316,18 @@ function onKind(){
 }
 kindSel.addEventListener('change',onKind); onKind();
 
-// 이미지: 브라우저에서 줄여서(긴 변 1000px, JPEG) base64로 보냄
-let IMG=null;   // {data, type}
-const fImg=document.getElementById('f-image'), prev=document.getElementById('img-prev');
+// 법기 추가/빼기 (최대 3)
+const blocks=n=>document.querySelector(`.artblock[data-n="${n}"]`);
+function artShown(){ return [2,3].filter(n=>blocks(n).style.display!=='none'); }
+document.getElementById('art-add').addEventListener('click',()=>{ const n=[2,3].find(n=>blocks(n).style.display==='none'); if(!n) return; blocks(n).style.display='block'; if(!( [2,3].find(n=>blocks(n).style.display==='none') )) document.getElementById('art-add').style.display='none'; });
+document.querySelectorAll('.art-remove').forEach(b=>b.addEventListener('click',()=>{ const n=+b.dataset.n, blk=blocks(n); blk.querySelectorAll('input,textarea').forEach(e=>{ if(e.type==='file'){e.value=''; clearImg(e);} else e.value=''; }); blk.querySelector('select').value='C'; blk.style.display='none'; document.getElementById('art-add').style.display='inline-block'; }));
+// 술식 추가/빼기 (최대 3)
+const sblocks=n=>document.querySelector(`.skillblock[data-n="${n}"]`);
+document.getElementById('skill-add').addEventListener('click',()=>{ const n=[2,3].find(n=>sblocks(n).style.display==='none'); if(!n) return; sblocks(n).style.display='block'; if(![2,3].find(n=>sblocks(n).style.display==='none')) document.getElementById('skill-add').style.display='none'; });
+document.querySelectorAll('.skill-remove').forEach(b=>b.addEventListener('click',()=>{ const blk=sblocks(+b.dataset.n); blk.querySelectorAll('input,textarea').forEach(e=>e.value=''); blk.style.display='none'; document.getElementById('skill-add').style.display='inline-block'; }));
+
+// 이미지: 브라우저에서 줄여서(긴 변 1000px, JPEG) base64로 보냄. 캐릭터 1장 + 법기 3장
+const IMGS={};   // key → {data,type}
 function shrink(file){
   return new Promise((res,rej)=>{
     const url=URL.createObjectURL(file); const im=new Image();
@@ -290,25 +341,32 @@ function shrink(file){
     im.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('이미지를 읽을 수 없어요')); };
     im.src=url; });
 }
-fImg.addEventListener('change',async()=>{
-  const f=fImg.files[0]; if(!f){IMG=null;prev.style.display='none';return;}
-  if(f.size>10*1024*1024){ alert('10MB 이하 이미지만 올릴 수 있어요.'); fImg.value=''; return; }
-  try{ IMG=await shrink(f); prev.querySelector('img').src=IMG.url; prev.style.display='flex'; }
-  catch(e){ alert(e.message); fImg.value=''; IMG=null; prev.style.display='none'; }
+function clearImg(input){ delete IMGS[input.dataset.key]; const p=input.parentElement.querySelector('.img-prev'); if(p) p.style.display='none'; }
+document.querySelectorAll('.imgpick').forEach(input=>{
+  const prev=input.parentElement.querySelector('.img-prev');
+  input.addEventListener('change',async()=>{
+    const f=input.files[0]; if(!f){clearImg(input);return;}
+    if(f.size>10*1024*1024){ alert('10MB 이하 이미지만 올릴 수 있어요.'); input.value=''; clearImg(input); return; }
+    try{ const im=await shrink(f); IMGS[input.dataset.key]=im; prev.querySelector('img').src=im.url; prev.style.display='flex'; }
+    catch(e){ alert(e.message); input.value=''; clearImg(input); }
+  });
+  prev.querySelector('.img-clear').addEventListener('click',()=>{ input.value=''; clearImg(input); });
 });
-document.getElementById('img-clear').addEventListener('click',()=>{ fImg.value=''; IMG=null; prev.style.display='none'; });
 
 const form=document.getElementById('apply-form'), formMsg=document.getElementById('form-msg'), submitBtn=document.getElementById('submit-btn');
 if(!APPLY_URL){submitBtn.disabled=true;formMsg.className='msg';formMsg.textContent='⚠️ 신청함이 아직 연결되지 않았어요. (관리자: 설정가이드 참고)';}
 form.addEventListener('submit',async e=>{
   e.preventDefault(); if(!APPLY_URL)return;
-  const d=Object.fromEntries(new FormData(form).entries()); delete d.imagefile;
+  const d=Object.fromEntries([...new FormData(form).entries()].filter(([k,v])=>!(v instanceof File)));
   if(d.kind==='인간'){d.origin='인간';d.motif='인간';} else d.partner='';
-  if(IMG){ d.imageData=IMG.data; d.imageType=IMG.type; }
+  // 안 쓴 법기 칸은 비움
+  for(const n of [2,3]) if(!d['artifact'+n]){ d['rank'+n]=''; d['artifactDesc'+n]=''; }
+  for(const k in IMGS){ d[k+'Data']=IMGS[k].data; d[k+'Type']=IMGS[k].type; }
   d._type='character'; d._date=new Date().toLocaleString('ko-KR');
-  submitBtn.disabled=true; submitBtn.textContent=IMG?'이미지와 함께 보내는 중...':'보내는 중...';
+  submitBtn.disabled=true; submitBtn.textContent=Object.keys(IMGS).length?'이미지와 함께 보내는 중...':'보내는 중...';
   try{ await fetch(APPLY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)});
-    formMsg.className='msg ok'; formMsg.textContent='✦ 신청이 접수됐어요! 운영진 확인 후 인명부에 올라갑니다.'; form.reset(); onKind(); IMG=null; prev.style.display='none';
+    formMsg.className='msg ok'; formMsg.textContent='✦ 신청이 접수됐어요! 운영진 확인 후 인명부에 올라갑니다.'; form.reset(); onKind();
+    document.querySelectorAll('.imgpick').forEach(clearImg); [2,3].forEach(n=>{blocks(n).style.display='none'; sblocks(n).style.display='none';}); document.getElementById('art-add').style.display='inline-block'; document.getElementById('skill-add').style.display='inline-block';
   }catch(err){ formMsg.className='msg err'; formMsg.textContent='전송에 실패했어요. 잠시 후 다시 시도해주세요.'; }
   submitBtn.disabled=false; submitBtn.textContent='✦ 신청하기';
 });
@@ -319,6 +377,6 @@ loadChars();
 <div class="pager"><a class="prev" href="make.html"><small>‹ 이전</small>✍️ 캐릭터 만들기</a><a class="next" href="changes.html"><small>다음 ›</small>🔄 9.17 이전 분들께</a></div>
   </div>
 </main>
-<script src="site.js?v=20260920e" defer></script>
+<script src="site.js?v=20260920g" defer></script>
 </body>
 </html>
