@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260920g">
+<link rel="stylesheet" href="style.css?v=20260922d">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -41,7 +41,7 @@
     <div class="icon">🗞️</div>
     <h1 class="title">중앙 영물 신문</h1>
     <article class="doc ">
-<p>가이아 대륙에서 오늘 벌어지는 일들. 진지한 것도, 아닌 것도 함께 실립니다.</p>
+<p>가이아 대륙에서 벌어지는 일들. 진지한 것도, 아닌 것도 함께 싣습니다. <b>매주 한 호</b>씩 나옵니다.</p>
 
 <div id="open-cases" class="cases" style="display:none">
   <div class="cases-head">🔍 추적 중 — 아직 풀리지 않은 일들</div>
@@ -81,16 +81,31 @@ function fmt(b){
 // 시트가 날짜 칸을 자동 변환하면 "Mon Apr 21 2025 ..." 로 오기도 함 → 항상 yyyy-mm-dd 로 맞춤
 function normDate(d){ d=String(d||'').trim(); if(/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0,10); const t=new Date(d); if(isNaN(t)) return d; return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
 function dateK(d){ const m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(d||''); return m?`${m[1]}년 ${+m[2]}월 ${+m[3]}일`:esc(d||''); }
+// 주간 발행: 같은 날짜 = 한 호. 2026-09-20(재개)을 제1호로 자동 계산. 그 이전(2025)은 「지난 신문」
+const FIRST_ISSUE='2026-01-01'; let ISSUE={};   // 2026년 기사부터 호를 매김 (첫 날짜 = 제1호)
+function buildIssues(){ ISSUE={}; [...new Set(NEWS.map(n=>n.date).filter(d=>d>=FIRST_ISSUE))].sort().forEach((d,i)=>ISSUE[d]=i+1); }
+const issueLabel=d=>ISSUE[d]?`제${ISSUE[d]}호`:'지난 신문';
+const SEC_ORDER={'특종':0,'속보':1,'추적 중':2,'해결':3,'기획':4,'생활':5,'공지':6};
 function article(n){
   const sc=SEC_CLASS[n.section]||'s-life';
-  return `<article class="news"><div class="news-head"><span class="sec ${sc}">${esc(n.section||'기사')}</span><span class="ndate">${dateK(n.date)}</span></div>
+  return `<article class="news"><div class="news-head"><span class="sec ${sc}">${esc(n.section||'기사')}</span><span class="ndate">${issueLabel(n.date)} · ${dateK(n.date)}</span></div>
     <h3 class="ntitle">${esc(n.title)}</h3><div class="nbody">${fmt(n.body)}</div></article>`;
 }
 function renderNews(){
   const q=(document.getElementById('nq').value||'').trim().toLowerCase();
   const list=NEWS.filter(n=>(secF==='전체'||n.section===secF)&&(!q||(n.title+' '+n.body).toLowerCase().includes(q)));
   const show=list.slice(0,LIMIT);
-  document.getElementById('news-list').innerHTML=show.length?show.map(article).join(''):'<div class="empty">🗞️ 아직 실린 기사가 없어요</div>';
+  let html='';
+  if(secF==='전체'&&!q){   // 호별 묶음 + 머리글
+    let cur=null, oldShown=false;
+    for(const n of show){
+      const isOld=n.date<FIRST_ISSUE;
+      if(isOld&&!oldShown){ html+=`<div class="issue-head old"><b>지난 신문</b><span>2025년 봄 ~ 여름 · 재개 이전 기사</span></div>`; oldShown=true; }
+      else if(!isOld&&n.date!==cur){ html+=`<div class="issue-head"><b>${issueLabel(n.date)}</b><span>${dateK(n.date)} 발행</span></div>`; }
+      cur=n.date; html+=article(n);
+    }
+  } else html=show.map(article).join('');
+  document.getElementById('news-list').innerHTML=html||'<div class="empty">🗞️ 아직 실린 기사가 없어요</div>';
   document.getElementById('ncount').textContent=list.length?`${list.length}건`:'';
   document.getElementById('news-more').style.display=list.length>LIMIT?'block':'none';
   const open=NEWS.filter(n=>n.section==='추적 중');
@@ -100,7 +115,11 @@ function renderNews(){
 }
 async function loadNews(){
   try{ const r=await fetch(APPLY_URL+'?news=1&t='+Date.now(),{cache:'no-store'}); NEWS=await r.json();
-    NEWS.forEach(n=>n.date=normDate(n.date)); NEWS.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||0); renderNews(); }
+    NEWS.forEach(n=>n.date=normDate(n.date));
+    // 최신 호가 위, 한 호 안에서는 꼭지 순서(특종→속보→추적 중→기획→생활→공지), 같은 꼭지면 나중에 올린 것이 위
+    NEWS.forEach((n,i)=>n._i=i);
+    NEWS.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||((SEC_ORDER[a.section]??9)-(SEC_ORDER[b.section]??9))||(b._i-a._i));
+    buildIssues(); renderNews(); }
   catch(e){ document.getElementById('news-list').innerHTML='<div class="empty">신문을 불러오지 못했어요. 잠시 후 새로고침해 주세요.</div>'; }
 }
 document.getElementById('sec-chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');secF=b.dataset.s;LIMIT=20;renderNews();});
@@ -112,6 +131,6 @@ loadNews();
 <div class="pager"><a class="prev" href="changes.html"><small>‹ 이전</small>🔄 9.17 이전 분들께</a><a class="next" href="world.html"><small>다음 ›</small>📕 이 세계는?</a></div>
   </div>
 </main>
-<script src="site.js?v=20260920g" defer></script>
+<script src="site.js?v=20260922d" defer></script>
 </body>
 </html>

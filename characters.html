@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260920g">
+<link rel="stylesheet" href="style.css?v=20260922d">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -78,10 +78,7 @@
   </div>
 
   <div class="fsec">기본</div>
-  <div class="row2">
-    <div class="field"><label>캐릭터 이름 *</label><input name="name" maxlength="20" required placeholder="예) 누렁"></div>
-    <div class="field"><label>이모지 <small>(선택)</small></label><input name="emoji" maxlength="4" placeholder="🐕"></div>
-  </div>
+  <div class="field"><label>캐릭터 이름 *</label><input name="name" maxlength="20" required placeholder="예) 누렁"></div>
   <div class="field">
     <label>종족 *</label>
     <select name="kind" id="f-kind" required>
@@ -111,13 +108,13 @@
     <div class="field"><label>무엇이었나요 *</label><input name="motif" id="f-motif" maxlength="20" placeholder="예) 개, 밧줄, 해태"></div>
   </div>
   <div class="row2">
-    <div class="field"><label>나이 *</label><input name="age" maxlength="30" required placeholder="예) 겉보기 20대 · 죽은 지 300년"></div>
+    <div class="field"><label>나이 *</label><input name="age" maxlength="40" required placeholder="예) 겉보기 20대 · 죽은 지 300년 / 인간: 1890년대 사람, 27세"></div>
     <div class="field"><label>성별 *</label><input name="gender" maxlength="20" required placeholder="예) 남 · 여 · 무성 · 비공개"></div>
   </div>
   <div class="field">
     <label>외형 *</label>
-    <textarea name="look" maxlength="400" required placeholder="인간의 모습 + 남은 고유 신체가 있다면. 예) 스무 살 안팎의 청년. 귀 끝이 조금 뾰족하다."></textarea>
-    <div class="hint">영물도 요괴도 인간의 모습입니다. 꼬리·귀·뿔 정도가 남을 뿐이에요.</div>
+    <textarea name="look" id="f-look" maxlength="400" required placeholder="예) 스무 살 안팎의 청년. 귀 끝이 조금 뾰족하다."></textarea>
+    <div class="hint">기본은 인간의 모습이에요. 오브젝트 헤드·수인·완전 인외처럼 인간형이 아니라면 어디가 어떻게 다른지 여기에 적어주세요. <a href="world.html">이 세계는? → 외형</a></div>
   </div>
   <div class="field">
     <label>성격 *</label>
@@ -262,7 +259,7 @@ async function loadChars(){
   render();
 }
 function card(c,lib){
-  const kc=KIND_CLASS[c.kind]||'k-etc', em=c.emoji||KIND_EMOJI[c.kind]||'🌙';
+  const kc=KIND_CLASS[c.kind]||'k-etc', em=KIND_EMOJI[c.kind]||'🌙';   // 이미지가 없으면 종족 표시
   const who=c.kind==='인간'?'인간':(c.origin==='그 외'||!c.origin)?(c.motif||''):[c.origin,c.motif].filter(Boolean).join(' · ');
   const ag=[c.age,c.gender].filter(Boolean).join(' · ');
   const where=[c.affiliation,c.role,c.base].filter(Boolean).join(' · ');
@@ -377,6 +374,6 @@ loadChars();
 <div class="pager"><a class="prev" href="make.html"><small>‹ 이전</small>✍️ 캐릭터 만들기</a><a class="next" href="changes.html"><small>다음 ›</small>🔄 9.17 이전 분들께</a></div>
   </div>
 </main>
-<script src="site.js?v=20260920g" defer></script>
+<script src="site.js?v=20260922d" defer></script>
 </body>
 </html>
