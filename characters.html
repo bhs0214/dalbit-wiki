@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260922k">
+<link rel="stylesheet" href="style.css?v=20260922m">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -71,11 +71,23 @@
 
 <h2 id="apply">✍️ 캐릭터 등록 신청</h2>
 
+<div class="form" id="edit-box">
+  <div class="fsec">이미 신청한 캐릭터를 고치려면</div>
+  <div class="row2">
+    <div class="field"><label>캐릭터 이름</label><input id="e-name" maxlength="20" placeholder="신청할 때 적은 이름"></div>
+    <div class="field"><label>수정 코드</label><input id="e-code" type="password" maxlength="20" autocomplete="off" placeholder="신청할 때 정한 코드"></div>
+  </div>
+  <div class="abtns"><button type="button" class="abtn primary" id="e-load">불러오기</button></div>
+  <div class="hint">불러오면 아래 신청 칸에 지금 내용이 채워져요. 고치고 「수정 보내기」를 누르면 운영자가 확인한 뒤 인명부에 반영됩니다. <b>그동안은 지금 내용이 그대로 보여요.</b> 코드를 잊었다면 운영자에게 물어보세요.</div>
+  <div class="msg" id="e-msg"></div>
+</div>
+
 <form class="form" id="apply-form" autocomplete="off">
-  <div class="desc">
+  <div class="desc" id="form-desc">
     처음이시면 <a href="make.html">캐릭터 만들기</a>를 먼저 읽어보세요. 샘플 캐릭터도 있어요.<br>
     신청하면 운영진 확인 후 인명부에 올라갑니다. <b>*</b> 표시만 필수예요.
   </div>
+  <div class="notice" id="edit-note" style="display:none"></div>
 
   <div class="fsec">기본</div>
   <div class="field"><label>캐릭터 이름 *</label><input name="name" maxlength="20" required placeholder="예) 누렁"></div>
@@ -223,11 +235,17 @@
   <div class="fsec">신청자</div>
   <div class="field">
     <label>오너 닉네임 *</label>
-    <input name="owner" maxlength="20" required placeholder="디스코드 닉 등">
+    <input name="owner" maxlength="20" required placeholder="카카오톡 닉 등">
     <div class="hint">실명·연락처는 적지 마세요.</div>
+  </div>
+  <div class="field">
+    <label>수정 코드 *</label>
+    <input name="editCode" minlength="4" maxlength="20" required autocomplete="off" placeholder="4~20자 · 예) 누렁이2026">
+    <div class="hint">나중에 이 캐릭터를 <b>직접 고칠 때 쓰는 열쇠</b>예요. 기억하기 쉬운 걸로 정하세요. 운영자가 볼 수 있으니 <b>진짜 쓰는 비밀번호는 쓰지 마세요.</b></div>
   </div>
 
   <button type="submit" class="submit" id="submit-btn">✦ 신청하기</button>
+  <div class="abtns" id="edit-cancel-row" style="display:none"><button type="button" class="abtn" id="edit-cancel">수정 그만두기 (새 신청으로)</button></div>
   <div class="msg" id="form-msg"></div>
 </form>
 
@@ -340,13 +358,15 @@ function shrink(file){
     im.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('이미지를 읽을 수 없어요')); };
     im.src=url; });
 }
-function clearImg(input){ delete IMGS[input.dataset.key]; const p=input.parentElement.querySelector('.img-prev'); if(p) p.style.display='none'; }
+const REMOVED={};   // 수정 중에 기존 사진을 뺀 칸
+function clearImg(input){ const k=input.dataset.key; if(EDIT&&EXISTING[k]&&!IMGS[k]) REMOVED[k]=true; delete IMGS[k]; const p=input.parentElement.querySelector('.img-prev'); if(p) p.style.display='none'; }
+function showImg(input,url){ const p=input.parentElement.querySelector('.img-prev'); p.querySelector('img').src=url; p.style.display='flex'; }
 document.querySelectorAll('.imgpick').forEach(input=>{
   const prev=input.parentElement.querySelector('.img-prev');
   input.addEventListener('change',async()=>{
     const f=input.files[0]; if(!f){clearImg(input);return;}
     if(f.size>10*1024*1024){ alert('10MB 이하 이미지만 올릴 수 있어요.'); input.value=''; clearImg(input); return; }
-    try{ const im=await shrink(f); IMGS[input.dataset.key]=im; prev.querySelector('img').src=im.url; prev.style.display='flex'; }
+    try{ const im=await shrink(f); IMGS[input.dataset.key]=im; delete REMOVED[input.dataset.key]; showImg(input,im.url); }
     catch(e){ alert(e.message); input.value=''; clearImg(input); }
   });
   prev.querySelector('.img-clear').addEventListener('click',()=>{ input.value=''; clearImg(input); });
@@ -354,6 +374,47 @@ document.querySelectorAll('.imgpick').forEach(input=>{
 
 const form=document.getElementById('apply-form'), formMsg=document.getElementById('form-msg'), submitBtn=document.getElementById('submit-btn');
 if(!APPLY_URL){submitBtn.disabled=true;formMsg.className='msg';formMsg.textContent='⚠️ 신청함이 아직 연결되지 않았어요. (관리자: 설정가이드 참고)';}
+
+// ── 내 캐릭터 수정 (이름 + 수정 코드) ──
+let EDIT=null;        // {name, code} 수정 중이면 채워짐
+let EXISTING={};      // 수정 중 기존 사진 URL
+function resetForm(){
+  form.reset(); onKind(); EDIT=null; EXISTING={}; for(const k in REMOVED) delete REMOVED[k]; for(const k in IMGS) delete IMGS[k];
+  document.querySelectorAll('.imgpick').forEach(i=>{ i.value=''; const p=i.parentElement.querySelector('.img-prev'); if(p) p.style.display='none'; });
+  [2,3].forEach(n=>{blocks(n).style.display='none'; sblocks(n).style.display='none';}); document.getElementById('art-add').style.display='inline-block'; document.getElementById('skill-add').style.display='inline-block';
+  submitBtn.textContent='✦ 신청하기'; document.getElementById('edit-cancel-row').style.display='none'; document.getElementById('edit-note').style.display='none'; document.getElementById('form-desc').style.display='block';
+}
+function fillForm(c,pending){
+  const ed=EDIT; resetForm(); EDIT=ed;   // resetForm 이 EDIT 을 지우므로 되살림
+  if(pending){ for(const k in pending) if(k!=='_at') c[k]=pending[k]; }   // 아직 심사 중인 수정본이 있으면 그걸 이어서 고침
+  for(const el of form.elements){ if(!el.name||el.type==='file') continue; if(c[el.name]!=null) el.value=c[el.name]; }
+  if(c.kind==='인간') form.elements.kind.value='인간'; onKind();
+  for(const n of [2,3]){ if(c['artifact'+n]){ blocks(n).style.display='block'; } if(c['skills'+n]||c['skillDesc'+n]){ sblocks(n).style.display='block'; } }
+  if(![2,3].find(n=>blocks(n).style.display==='none')) document.getElementById('art-add').style.display='none';
+  if(![2,3].find(n=>sblocks(n).style.display==='none')) document.getElementById('skill-add').style.display='none';
+  document.querySelectorAll('.imgpick').forEach(i=>{ const u=c[i.dataset.key]; if(okImg(u)){ EXISTING[i.dataset.key]=u; showImg(i,u); } });
+  form.elements.editCode.value=EDIT.code;
+  submitBtn.textContent='✎ 수정 보내기'; document.getElementById('edit-cancel-row').style.display='block'; document.getElementById('form-desc').style.display='none';
+  const note=document.getElementById('edit-note'); note.textContent=`✎ 「${c.name}」을(를) 고치는 중이에요. 바꾸고 아래 「수정 보내기」를 누르세요. 사진은 새로 고를 때만 바뀝니다.`+(pending?` 이미 보낸 수정본(${pending._at||''})이 심사 중이라 그 내용을 불러왔어요. 다시 보내면 그 수정본이 이걸로 바뀝니다.`:''); note.style.display='block';
+  form.scrollIntoView({behavior:'smooth'});
+}
+async function ownerApi(body){
+  const r=await fetch(APPLY_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({_type:'owner'},body))});
+  return r.json();
+}
+document.getElementById('e-load').addEventListener('click',async()=>{
+  const name=document.getElementById('e-name').value.trim(), code=document.getElementById('e-code').value.trim(), msg=document.getElementById('e-msg'), btn=document.getElementById('e-load');
+  if(!name||code.length<4){ msg.className='msg err'; msg.textContent='이름과 수정 코드(4자 이상)를 넣어주세요.'; return; }
+  btn.disabled=true; msg.className='msg'; msg.textContent='불러오는 중…';
+  try{ const d=await ownerApi({action:'get',name,code});
+    if(!d.ok){ msg.className='msg err'; msg.textContent=d.error==='nomatch'?'이름이나 수정 코드가 맞지 않아요. (신청 직후라면 시트에 올라갈 때까지 잠깐 기다려주세요)':'불러오지 못했어요: '+d.error; }
+    else { EDIT={name:d.item.name,code}; fillForm(d.item,d.pending); msg.className='msg ok'; msg.textContent='✓ 불러왔어요. 아래에서 고쳐주세요.'; }
+  }catch(e){ msg.className='msg err'; msg.textContent='서버에 연결하지 못했어요. 잠시 후 다시 시도해주세요.'; }
+  btn.disabled=false;
+});
+document.getElementById('e-code').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('e-load').click(); } });
+document.getElementById('edit-cancel').addEventListener('click',()=>{ resetForm(); formMsg.textContent=''; });
+
 form.addEventListener('submit',async e=>{
   e.preventDefault(); if(!APPLY_URL)return;
   const d=Object.fromEntries([...new FormData(form).entries()].filter(([k,v])=>!(v instanceof File)));
@@ -361,13 +422,21 @@ form.addEventListener('submit',async e=>{
   // 안 쓴 법기 칸은 비움
   for(const n of [2,3]) if(!d['artifact'+n]){ d['rank'+n]=''; d['artifactDesc'+n]=''; }
   for(const k in IMGS){ d[k+'Data']=IMGS[k].data; d[k+'Type']=IMGS[k].type; }
-  d._type='character'; d._date=new Date().toLocaleString('ko-KR');
+  const code=d.editCode;
   submitBtn.disabled=true; submitBtn.textContent=Object.keys(IMGS).length?'이미지와 함께 보내는 중...':'보내는 중...';
-  try{ await fetch(APPLY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)});
-    formMsg.className='msg ok'; formMsg.textContent='✦ 신청이 접수됐어요! 운영진 확인 후 인명부에 올라갑니다.'; form.reset(); onKind();
-    document.querySelectorAll('.imgpick').forEach(clearImg); [2,3].forEach(n=>{blocks(n).style.display='none'; sblocks(n).style.display='none';}); document.getElementById('art-add').style.display='inline-block'; document.getElementById('skill-add').style.display='inline-block';
-  }catch(err){ formMsg.className='msg err'; formMsg.textContent='전송에 실패했어요. 잠시 후 다시 시도해주세요.'; }
-  submitBtn.disabled=false; submitBtn.textContent='✦ 신청하기';
+  try{
+    if(EDIT){   // 수정: 결과를 받아서 확인
+      for(const k of ['image','artifactImage','artifactImage2','artifactImage3']){ if(REMOVED[k]) d[k]=''; else if(!IMGS[k]) delete d[k]; }
+      const r=await ownerApi({action:'update',name:EDIT.name,code:EDIT.code,fields:d});
+      if(!r.ok) throw new Error(r.error==='nomatch'?'이름이나 수정 코드가 맞지 않아요.':r.error==='nochange'?'바뀐 내용이 없어요.':r.error==='nocol'?'관리자가 시트 코드를 아직 새 버전으로 올리지 않았어요.':'실패: '+r.error);
+      resetForm(); formMsg.className='msg ok'; formMsg.textContent='✎ 수정본을 보냈어요! 운영자가 확인하면 인명부에 반영됩니다. 그때까지는 지금 내용이 그대로 보여요.';
+    } else {
+      d._type='character'; d._date=new Date().toLocaleString('ko-KR');
+      await fetch(APPLY_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)});
+      resetForm(); formMsg.className='msg ok'; formMsg.textContent=`✦ 신청이 접수됐어요! 운영진 확인 후 인명부에 올라갑니다. 수정 코드 「${code}」는 꼭 기억해 두세요 — 나중에 직접 고칠 때 씁니다.`;
+    }
+  }catch(err){ formMsg.className='msg err'; formMsg.textContent=err.message&&!/fetch/i.test(err.message)?err.message:'전송에 실패했어요. 잠시 후 다시 시도해주세요.'; }
+  submitBtn.disabled=false; submitBtn.textContent=EDIT?'✎ 수정 보내기':'✦ 신청하기';
 });
 loadChars();
 </script>
@@ -376,6 +445,6 @@ loadChars();
 <div class="pager"><a class="prev" href="make.html"><small>‹ 이전</small>✍️ 캐릭터 만들기</a><a class="next" href="play.html"><small>다음 ›</small>🎭 역극은 이렇게</a></div>
   </div>
 </main>
-<script src="site.js?v=20260922k" defer></script>
+<script src="site.js?v=20260922m" defer></script>
 </body>
 </html>

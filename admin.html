@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260922k">
+<link rel="stylesheet" href="style.css?v=20260922m">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -90,6 +90,7 @@
       <button class="chip" data-s="휴면">휴면</button>
       <button class="chip" data-s="소멸">소멸</button>
       <button class="chip" data-s="반려">반려</button>
+      <button class="chip" data-s="수정 대기">✎ 수정 대기</button>
       <button class="chip" data-s="전체">전체</button>
     </div>
     <div class="admin-tools">
@@ -107,7 +108,7 @@
 // APPLY_URL 은 characters.html 과 같은 주소입니다 (빌드 시 자동으로 채워짐)
 const APPLY_URL = 'https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5jCg_V0ncwXQgCrxczcI5Qnzvo0DJDGEv1umaStNCaBTgAf7/exec';
 const STATUSES = ['심사중','활동중','휴면','소멸','반려'];
-const FIELDS = [['name','이름'],['owner','오너'],['kind','종족'],['origin','출신'],['motif','모티프'],['age','나이'],['gender','성별'],['partner','계약 상대 (인간)'],['affiliation','소속'],['base','거점'],['role','직책'],['look','외형'],['personality','성격'],['story','이야기'],
+const FIELDS = [['name','이름'],['owner','오너'],['editCode','수정 코드 (신청자가 직접 고칠 때 쓰는 열쇠)'],['kind','종족'],['origin','출신'],['motif','모티프'],['age','나이'],['gender','성별'],['partner','계약 상대 (인간)'],['affiliation','소속'],['base','거점'],['role','직책'],['look','외형'],['personality','성격'],['story','이야기'],
   ['artifact','법기 1'],['rank','랭크 1'],['artifactDesc','법기 1 설명'],['artifactImage','법기 1 사진 주소'],
   ['artifact2','법기 2'],['rank2','랭크 2'],['artifactDesc2','법기 2 설명'],['artifactImage2','법기 2 사진 주소'],
   ['artifact3','법기 3'],['rank3','랭크 3'],['artifactDesc3','법기 3 설명'],['artifactImage3','법기 3 사진 주소'],
@@ -134,10 +135,13 @@ async function load(){
     ITEMS = d.items; render();
   }catch(e){ $('alist').innerHTML = '<div class="empty">시트를 불러오지 못했어요. Apps Script 를 새 코드로 재배포했는지 확인해 주세요.<br><small>'+esc(e)+'</small></div>'; }
 }
+const LABEL = Object.fromEntries(FIELDS.map(([k,l])=>[k,l.replace(/ \(.*\)$/,'')]));
+function pendingOf(c){ try{ const o=JSON.parse(c.pending||''); return o&&typeof o==='object'?o:null; }catch(e){ return null; } }
 function render(){
   const q = ($('aq').value||'').trim().toLowerCase();
-  const list = ITEMS.filter(c => (stF==='전체' || (c.status||'')===stF) && (!q || [c.name,c.owner].join(' ').toLowerCase().includes(q)));
+  const list = ITEMS.filter(c => (stF==='전체' || (stF==='수정 대기' ? !!pendingOf(c) : (c.status||'')===stF)) && (!q || [c.name,c.owner].join(' ').toLowerCase().includes(q)));
   STATUSES.forEach(s => { const b = document.querySelector(`#st-chips .chip[data-s="${s}"]`); const n = ITEMS.filter(c=>c.status===s).length; b.textContent = s + (n?` ${n}`:''); });
+  { const n = ITEMS.filter(c=>pendingOf(c)).length; const b = document.querySelector('#st-chips .chip[data-s="수정 대기"]'); b.textContent = '✎ 수정 대기' + (n?` ${n}`:''); b.classList.toggle('alert', n>0); }
   $('acount').textContent = list.length ? `${list.length}건` : '';
   $('alist').innerHTML = list.length ? list.map(card).join('') : '<div class="empty">여기에 해당하는 신청이 없어요</div>';
 }
@@ -149,10 +153,14 @@ function card(c){
   const ag=[c.age,c.gender].filter(Boolean).join(' · ');
   const img=okImg(c.image);
   const line=(label,v)=>v?`<div><b>${label}</b> ${esc(v)}</div>`:'';
-  return `<div class="acard" id="row-${c.row}">
+  const p=pendingOf(c);
+  const pend=p?`<div class="pending"><div class="pending-head">✎ 신청자가 보낸 수정본 <small>${esc(p._at||'')}</small> — 적용하기 전까지 인명부에는 예전 내용이 보여요</div>
+      ${Object.keys(p).filter(k=>k!=='_at').map(k=>`<div class="pdiff"><b>${esc(LABEL[k]||k)}</b><div class="pold">${esc(c[k]||'(비어 있음)')}</div><div class="pnew">${esc(p[k]||'(비움)')}</div></div>`).join('')}
+      <div class="abtns"><button class="abtn primary" data-act="pending_apply" data-row="${c.row}">✓ 수정 적용</button><button class="abtn" data-act="pending_reject" data-row="${c.row}">돌려보내기 (버림)</button></div></div>`:'';
+  return `<div class="acard${p?' has-pending':''}" id="row-${c.row}">
     <div class="ahead">
       <div class="aemoji${img?' has-img':''}">${img?`<img src="${esc(c.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:({영물:'🌕',요괴:'🌑',인간:'🧍'}[c.kind]||'🌙')}</div>
-      <div class="atitle"><b>${esc(c.name)}</b> ${badge(c.status)} <span class="arank">${esc(c.rank||'')}</span>
+      <div class="atitle"><b>${esc(c.name)}</b> ${badge(c.status)}${p?' <span class="badge b-edit">✎ 수정 대기</span>':''} <span class="arank">${esc(c.rank||'')}</span>
         <div class="ameta">${esc(c.kind||'')} · ${esc(who)}${ag?' · '+esc(ag):''}${where?' · '+esc(where):''} · by ${esc(c.owner)} <span class="adate">${esc(c.date)}</span></div>
         ${c.kind==='인간'&&c.partner?`<div class="ameta">🤝 계약 — ${esc(c.partner)}</div>`:''}</div>
     </div>
@@ -163,6 +171,7 @@ function card(c){
       ${skillsOf(c).map((s,i,arr)=>line('술식'+(arr.length>1?' '+(i+1):''), (s.name||'')+(s.desc?' — '+s.desc:''))).join('')}${line('관계', c.relations)}${line('한 줄', c.line)}
       ${c.image&&!img?line('이미지', c.image):''}
     </div>
+    ${pend}
     <div class="abtns">
       ${btn('활동중','✓ 승인 (활동중)','primary')}${btn('반려','반려')}${btn('휴면','휴면')}${btn('소멸','소멸 (책으로)')}
       <button class="abtn" data-act="edit" data-row="${c.row}">✎ 수정</button>
@@ -213,6 +222,13 @@ $('alist').addEventListener('click', async e => {
   const row = +b.dataset.row, act = b.dataset.act;
   if(act==='status') setStatus(row, b.dataset.s);
   else if(act==='delete') del(row);
+  else if(act==='pending_apply'||act==='pending_reject'){
+    const c = ITEMS.find(x=>x.row===row); const p = pendingOf(c); if(!c||!p) return;
+    if(act==='pending_reject' && !confirm(`「${c.name}」의 수정본을 버릴까요? 신청자가 다시 보내야 해요.`)) return;
+    busy(row,true);
+    const d = await api({action:act, row}).catch(()=>({ok:false,error:'net'}));
+    if(d.ok){ if(act==='pending_apply'){ for(const k in p) if(k!=='_at') c[k]=p[k]; } c.pending=''; render(); } else { alert('실패: '+d.error); busy(row,false); }
+  }
   else if(act==='edit'){ const c = ITEMS.find(x=>x.row===row); const box = $('edit-'+row); box.innerHTML = editForm(c); box.style.display = 'block'; }
   else if(act==='cancel'){ const box = $('edit-'+row); box.style.display = 'none'; box.innerHTML = ''; }
 });
@@ -290,6 +306,6 @@ try{ const k = sessionStorage.getItem('dalbit-admin-key'); if(k) login(k); }catc
 
   </div>
 </main>
-<script src="site.js?v=20260922k" defer></script>
+<script src="site.js?v=20260922m" defer></script>
 </body>
 </html>

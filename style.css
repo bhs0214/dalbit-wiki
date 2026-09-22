@@ -124,6 +124,17 @@ html[data-theme=dark] .s-open{background:#492f64;color:#e4d4f4}
 .b-dim{background:var(--tag-gray);color:var(--tag-gray-t)}
 .b-gone{background:var(--tag-gray);color:var(--tag-gray-t);text-decoration:line-through}
 .b-no{background:var(--tag-red);color:var(--tag-red-t)}
+.b-edit{background:var(--tag-yellow);color:var(--tag-yellow-t)}
+.chip.alert{box-shadow:inset 0 0 0 1.5px var(--orange)}
+.acard.has-pending{border-color:var(--orange)}
+.pending{margin:10px 0 4px;padding:10px 12px;border-radius:6px;background:var(--callout);border-left:3px solid var(--orange);font-size:13px}
+.pending-head{font-weight:600;margin-bottom:8px}.pending-head small{font-weight:400;color:var(--text3);margin-left:4px}
+.pdiff{display:grid;grid-template-columns:110px 1fr 1fr;gap:6px 10px;padding:5px 0;border-top:1px solid var(--border);align-items:start}
+.pdiff b{color:var(--text2);font-weight:600}
+.pold{color:var(--text3);text-decoration:line-through;white-space:pre-wrap;word-break:break-all}
+.pnew{white-space:pre-wrap;word-break:break-all;background:var(--tag-yellow);color:var(--tag-yellow-t);border-radius:3px;padding:1px 5px}
+@media (max-width:600px){.pdiff{grid-template-columns:1fr}.pdiff b::after{content:''}}
+#edit-box{margin:0 0 18px;padding-top:6px}
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:25;display:none}
 .scrim.on{display:block}
 
