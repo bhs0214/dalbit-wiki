@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260922d">
+<link rel="stylesheet" href="style.css?v=20260922i">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -26,7 +26,7 @@
 <div class="scrim"></div>
 <aside class="side">
   <a class="ws" href="index.html"><span class="m">🌕</span><span>달빛여관 (達光旅館)<small>영물세계 · 세계관</small></span></a>
-  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class="on"><span class="i">👥</span>인명부 · 신청</a><a href="changes.html" class=""><span class="i">🔄</span>9.17 이전 분들께</a><div class="grp">소식</div><a href="news.html" class=""><span class="i">🗞️</span>중앙 영물 신문</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
+  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class="on"><span class="i">👥</span>인명부 · 신청</a><a href="play.html" class=""><span class="i">🎭</span>역극은 이렇게</a><div class="grp">소식</div><a href="news.html" class=""><span class="i">🗞️</span>중앙 영물 신문</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
   <div class="side-foot"><a href="index.html">달빛여관 (達光旅館)</a><a class="adm" href="admin.html" title="관리">🗝</a></div>
 </aside>
 <main>
@@ -243,6 +243,8 @@ const APPLY_URL = 'https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5j
 let CHARS=[], kindF='전체', affF='전체';
 const KIND_EMOJI={영물:'🌕',요괴:'🌑',인간:'🧍'}, KIND_CLASS={영물:'k-yeong',요괴:'k-yo',인간:'k-human'};
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+// 긴 글 칸: **굵게** *기울임* 만 허용
+function inl(s){ return esc(s).replace(/==([^\s=](?:[^=\n]*?[^\s=])?)==/g,'<mark>$1</mark>').replace(/\*\*\*([^\s*](?:[^*\n]*?[^\s*])?)\*\*\*/g,'<b><i>$1</i></b>').replace(/\*\*([^\s*](?:[^*\n]*?[^\s*])?)\*\*/g,'<b>$1</b>').replace(/(^|[^*\w])\*([^\s*](?:[^*\n]*?[^\s*])?)\*(?![*\w])/g,'$1<i>$2</i>'); }
 function note(t){const n=document.getElementById('src-note');if(!t){n.style.display='none';return;}n.textContent=t;n.style.display='block';}
 const okImg=u=>/^https:\/\/(drive\.google\.com|lh3\.googleusercontent\.com|[\w.-]+\.githubusercontent\.com)\//.test(u||'');
 // 법기 1~3 / 술식 1~3을 배열로
@@ -268,14 +270,14 @@ function card(c,lib){
   const st=c.status&&c.status!=='활동중'&&!lib?`<span class="cc-status">${esc(c.status)}</span>`:'';
   const img=!lib&&okImg(c.image);
   const avatar=lib?'📖':img?`<img src="${esc(c.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:esc(em);
-  const sec=(label,v)=>v?`<div class="cc-sec"><b>${label}</b>${esc(v)}</div>`:'';
-  const artSec=arts.map((a,i)=>`<div class="cc-sec"><b>법기${arts.length>1?' '+(i+1):''} — ${esc(a.name)} ${a.rank?'('+esc(a.rank)+')':''}</b>${okImg(a.img)?`<a class="cc-artimg" href="${esc(a.img)}" target="_blank" rel="noopener"><img src="${esc(a.img)}" alt="${esc(a.name)}" loading="lazy" referrerpolicy="no-referrer"></a>`:''}${esc(a.desc)}</div>`).join('');
+  const sec=(label,v)=>v?`<div class="cc-sec"><b>${label}</b>${inl(v)}</div>`:'';
+  const artSec=arts.map((a,i)=>`<div class="cc-sec"><b>법기${arts.length>1?' '+(i+1):''} — ${esc(a.name)} ${a.rank?'('+esc(a.rank)+')':''}</b>${okImg(a.img)?`<a class="cc-artimg" href="${esc(a.img)}" target="_blank" rel="noopener"><img src="${esc(a.img)}" alt="${esc(a.name)}" loading="lazy" referrerpolicy="no-referrer"></a>`:''}${inl(a.desc)}</div>`).join('');
   const more=[
     img?`<a class="cc-img" href="${esc(c.image)}" target="_blank" rel="noopener"><img src="${esc(c.image)}" alt="${esc(c.name)}" loading="lazy" referrerpolicy="no-referrer"></a>`:'',
     sec('외형',c.look), sec('성격',c.personality),
     sec(c.kind==='인간'?'왜 계약했는가':'이야기',c.story),
     artSec,
-    skillsOf(c).map((s,i,arr)=>`<div class="cc-sec"><b>술식${arr.length>1?' '+(i+1):''}${s.name?' — '+esc(s.name):''}</b>${esc(s.desc)}</div>`).join(''),
+    skillsOf(c).map((s,i,arr)=>`<div class="cc-sec"><b>술식${arr.length>1?' '+(i+1):''}${s.name?' — '+esc(s.name):''}</b>${inl(s.desc)}</div>`).join(''),
     sec('관계',c.relations)].join('');
   return `<div class="cc${(c.status==='휴면'||lib)?' dim':''}">
     <div class="cc-head"><div class="cc-emoji${img?' has-img':''}">${avatar}</div>
@@ -371,9 +373,9 @@ loadChars();
 </script>
 
     </article>
-<div class="pager"><a class="prev" href="make.html"><small>‹ 이전</small>✍️ 캐릭터 만들기</a><a class="next" href="changes.html"><small>다음 ›</small>🔄 9.17 이전 분들께</a></div>
+<div class="pager"><a class="prev" href="make.html"><small>‹ 이전</small>✍️ 캐릭터 만들기</a><a class="next" href="play.html"><small>다음 ›</small>🎭 역극은 이렇게</a></div>
   </div>
 </main>
-<script src="site.js?v=20260922d" defer></script>
+<script src="site.js?v=20260922i" defer></script>
 </body>
 </html>

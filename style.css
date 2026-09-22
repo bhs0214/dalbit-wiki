@@ -32,6 +32,7 @@ body{margin:0;background:var(--bg);color:var(--text);
 a{color:inherit;text-decoration:underline;text-decoration-color:var(--ul);text-underline-offset:3px}
 a:hover{text-decoration-color:currentColor}
 ::selection{background:rgba(35,131,226,.28)}
+mark{background:var(--tag-yellow);color:var(--tag-yellow-t);padding:0 .2em;border-radius:3px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 
 /* ── 사이드바 ── */
 .side{position:fixed;top:0;left:0;bottom:0;width:var(--sidew);background:var(--side);overflow-y:auto;padding:8px 8px 24px;z-index:30;font-size:14px}

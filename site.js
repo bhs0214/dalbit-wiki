@@ -11,6 +11,16 @@ function paintTheme(){ if(tbtn) tbtn.textContent=curTheme()==='dark'?'☀︎':'�
 tbtn?.addEventListener('click',()=>{ const n=curTheme()==='dark'?'light':'dark'; document.documentElement.dataset.theme=n; try{localStorage.setItem('dalbit-theme',n);}catch(e){} paintTheme(); });
 paintTheme();
 
+// ← → 키로 이전·다음 페이지 (글자 입력 중이거나 Ctrl/Alt 같이 누르면 무시)
+document.addEventListener('keydown',e=>{
+  if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight') return;
+  if(e.ctrlKey||e.altKey||e.metaKey||e.shiftKey) return;
+  const t=e.target, tag=(t.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='textarea'||tag==='select'||t.isContentEditable) return;
+  const a=document.querySelector(e.key==='ArrowRight'?'.pager a.next':'.pager a.prev');
+  if(a) location.href=a.getAttribute('href');
+});
+
 // 코드 상자 복사 버튼
 document.querySelectorAll('pre').forEach(pre=>{
   const b=document.createElement('button'); b.className='copy'; b.textContent='복사';

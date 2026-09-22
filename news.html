@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260922d">
+<link rel="stylesheet" href="style.css?v=20260922i">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -26,7 +26,7 @@
 <div class="scrim"></div>
 <aside class="side">
   <a class="ws" href="index.html"><span class="m">🌕</span><span>달빛여관 (達光旅館)<small>영물세계 · 세계관</small></span></a>
-  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class=""><span class="i">👥</span>인명부 · 신청</a><a href="changes.html" class=""><span class="i">🔄</span>9.17 이전 분들께</a><div class="grp">소식</div><a href="news.html" class="on"><span class="i">🗞️</span>중앙 영물 신문</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
+  <nav class="nav"><div class="grp">시작하기</div><a href="make.html" class=""><span class="i">✍️</span>캐릭터 만들기</a><a href="characters.html" class=""><span class="i">👥</span>인명부 · 신청</a><a href="play.html" class=""><span class="i">🎭</span>역극은 이렇게</a><div class="grp">소식</div><a href="news.html" class="on"><span class="i">🗞️</span>중앙 영물 신문</a><div class="grp">세계 설정</div><a href="world.html" class=""><span class="i">📕</span>이 세계는?</a><a href="death.html" class=""><span class="i">📗</span>죽음과 책</a><a href="artifact.html" class=""><span class="i">📘</span>법기 (法器)</a><a href="human.html" class=""><span class="i">🤝</span>인간과 계약</a><div class="grp">세계 안내</div><a href="city.html" class=""><span class="i">🗺</span>도시 안내</a><a href="inn.html" class=""><span class="i">🏮</span>달빛여관</a><a href="hunt.html" class=""><span class="i">⚔️</span>사냥과 세력</a><a href="deep.html" class=""><span class="i">📚</span>심화 설정</a></nav>
   <div class="side-foot"><a href="index.html">달빛여관 (達光旅館)</a><a class="adm" href="admin.html" title="관리">🗝</a></div>
 </aside>
 <main>
@@ -68,14 +68,15 @@ const APPLY_URL = 'https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5j
 const SEC_CLASS = {'특종':'s-top','속보':'s-flash','기획':'s-feat','생활':'s-life','추적 중':'s-open','해결':'s-done','공지':'s-notice'};
 let NEWS=[], secF='전체', LIMIT=20;
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-// 본문: 빈 줄 = 문단, "> " = 인용, "## " = 소제목, "---" = 구분선
+// 본문: 빈 줄 = 문단, "> " = 인용, "## " = 소제목, "---" = 구분선, **굵게**, *기울임*, ==형광펜==
+function inl(s){ return esc(s).replace(/==([^\s=](?:[^=\n]*?[^\s=])?)==/g,'<mark>$1</mark>').replace(/\*\*\*([^\s*](?:[^*\n]*?[^\s*])?)\*\*\*/g,'<b><i>$1</i></b>').replace(/\*\*([^\s*](?:[^*\n]*?[^\s*])?)\*\*/g,'<b>$1</b>').replace(/(^|[^*\w])\*([^\s*](?:[^*\n]*?[^\s*])?)\*(?![*\w])/g,'$1<i>$2</i>'); }
 function fmt(b){
   return (b||'').replace(/\r/g,'').split(/\n{2,}/).map(p=>{
     p=p.trim(); if(!p) return '';
     if(/^---+$/.test(p)) return '<hr>';
-    if(p.startsWith('> ')) return '<div class="quote"><p>'+p.split('\n').map(l=>esc(l.replace(/^>\s?/,''))).join('<br>')+'</p></div>';
-    if(p.startsWith('#')) return '<h4>'+esc(p.replace(/^#+\s*/,''))+'</h4>';
-    return '<p>'+p.split('\n').map(esc).join('<br>')+'</p>';
+    if(p.startsWith('> ')) return '<div class="quote"><p>'+p.split('\n').map(l=>inl(l.replace(/^>\s?/,''))).join('<br>')+'</p></div>';
+    if(p.startsWith('#')) return '<h4>'+inl(p.replace(/^#+\s*/,''))+'</h4>';
+    return '<p>'+p.split('\n').map(inl).join('<br>')+'</p>';
   }).join('');
 }
 // 시트가 날짜 칸을 자동 변환하면 "Mon Apr 21 2025 ..." 로 오기도 함 → 항상 yyyy-mm-dd 로 맞춤
@@ -128,9 +129,9 @@ loadNews();
 </script>
 
     </article>
-<div class="pager"><a class="prev" href="changes.html"><small>‹ 이전</small>🔄 9.17 이전 분들께</a><a class="next" href="world.html"><small>다음 ›</small>📕 이 세계는?</a></div>
+<div class="pager"><a class="prev" href="play.html"><small>‹ 이전</small>🎭 역극은 이렇게</a><a class="next" href="world.html"><small>다음 ›</small>📕 이 세계는?</a></div>
   </div>
 </main>
-<script src="site.js?v=20260922d" defer></script>
+<script src="site.js?v=20260922i" defer></script>
 </body>
 </html>
