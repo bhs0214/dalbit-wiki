@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260925c">
+<link rel="stylesheet" href="style.css?v=20260925f">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -63,8 +63,21 @@
             <option value="특종">특종 — 큰 사건</option><option value="속보">속보 — 방금 벌어진 일</option>
             <option value="기획">기획 — 읽을거리</option><option value="생활" selected>생활 — 소소한 화제</option>
             <option value="추적 중">추적 중 — 미해결 사건 (위에 고정)</option><option value="해결">해결 — 끝난 사건</option>
+            <option value="의뢰">의뢰 — 의뢰판에 올라가는 일거리</option>
             <option value="공지">공지</option>
           </select></div>
+      </div>
+      <div class="qform" id="qform" style="display:none">
+        <div class="row2">
+          <div class="field"><label>종류</label><select name="q_type"><option>토벌</option><option>회수</option><option>호위</option><option>추적</option><option>구제</option><option>기타</option></select></div>
+          <div class="field"><label>등급</label><select name="q_rank"><option value="C">C</option><option value="B" selected>B</option><option value="A">A</option><option value="EX">EX</option><option value="누구나">누구나</option></select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>의뢰인</label><input name="q_client" maxlength="40" placeholder="예) 중앙 · 잉어 가문 · 이름 모를 노파"></div>
+          <div class="field"><label>보상</label><input name="q_reward" maxlength="80" placeholder="예) 등급 상승 · 책 열람 · 은 30닢"></div>
+        </div>
+        <div class="field"><label>의뢰 상태</label><select name="q_status"><option>모집 중</option><option>진행 중</option><option>완료</option></select>
+          <div class="hint">「완료」로 바꾸면 의뢰판에서 내려가고 기사로만 남아요. 결과는 다음 호 기사로 써주세요.</div></div>
       </div>
       <div class="field"><label>제목</label><input name="title" maxlength="120" required placeholder="예) [특종] 설의 도서관에서 책 한 권이 사라졌다"></div>
       <div class="field"><label>본문</label><textarea name="body" rows="10" placeholder="빈 줄로 문단을 나눕니다. 줄 앞에 '> '를 붙이면 인용, '## '를 붙이면 소제목, '---' 는 구분선. **굵게** *기울임* ==형광펜=="></textarea></div>
@@ -75,7 +88,7 @@
       <div class="msg" id="news-msg"></div>
     </form>
     <div class="admin-bar" style="margin-top:18px">
-      <div class="chips" id="ns-chips"><button class="chip on" data-s="전체">전체</button><button class="chip" data-s="게시">게시</button><button class="chip" data-s="초안">초안</button><button class="chip" data-s="추적 중">추적 중</button></div>
+      <div class="chips" id="ns-chips"><button class="chip on" data-s="전체">전체</button><button class="chip" data-s="게시">게시</button><button class="chip" data-s="초안">초안</button><button class="chip" data-s="추적 중">추적 중</button><button class="chip" data-s="의뢰">의뢰</button></div>
       <div class="admin-tools"><button class="abtn" id="news-reload">↻ 새로고침</button></div>
     </div>
     <div class="count" id="news-count"></div>
@@ -248,7 +261,19 @@ $('reload').addEventListener('click', load);
 
 // ── 신문 ──
 let NEWS=[], nsF='전체';
-const SEC_CLASS={'특종':'s-top','속보':'s-flash','기획':'s-feat','생활':'s-life','추적 중':'s-open','해결':'s-done','공지':'s-notice'};
+const SEC_CLASS={'특종':'s-top','속보':'s-flash','기획':'s-feat','생활':'s-life','추적 중':'s-open','해결':'s-done','공지':'s-notice','의뢰':'s-quest'};
+// 의뢰 정보는 본문 첫 줄 "[의뢰] 종류=…; 등급=…; 의뢰인=…; 보상=…; 상태=…" 에 넣어 둠 (시트 열 추가 없이)
+const QKEYS=[['q_type','종류'],['q_rank','등급'],['q_client','의뢰인'],['q_reward','보상'],['q_status','상태']];
+function questOf(n){
+  if(n.section!=='의뢰') return null;
+  const m=/^\[의뢰\]\s*([^\n]*)\n?([\s\S]*)$/.exec((n.body||'').replace(/\r/g,''));
+  const q={q_type:'',q_rank:'',q_client:'',q_reward:'',q_status:'모집 중',rest:n.body||''};
+  if(!m) return q;
+  m[1].split(';').forEach(p=>{ const [k,...v]=p.split('='); const val=v.join('=').trim(); const hit=QKEYS.find(([,label])=>label===(k||'').trim()); if(hit&&val) q[hit[0]]=val; });
+  q.rest=m[2]; return q;
+}
+function questLine(f){ return '[의뢰] '+QKEYS.map(([k,label])=>label+'='+String(f[k]||'').replace(/[;\n]/g,' ').trim()).join('; '); }
+const QSTATUS_CLASS={'모집 중':'qs-open','진행 중':'qs-going','완료':'qs-done'};
 function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function normDate(d){ d=String(d||'').trim(); if(/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0,10); const t=new Date(d); if(isNaN(t)) return d; return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
 async function loadNews(){
@@ -258,23 +283,30 @@ async function loadNews(){
   d.items.forEach(n=>n.date=normDate(n.date)); NEWS=d.items.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.row-a.row); renderNews();
 }
 function renderNews(){
-  const list=NEWS.filter(n=>nsF==='전체'||(nsF==='추적 중'?n.section==='추적 중':n.status===nsF));
+  const list=NEWS.filter(n=>nsF==='전체'||(nsF==='추적 중'||nsF==='의뢰'?n.section===nsF:n.status===nsF));
   $('news-count').textContent=list.length?`${list.length}건 · 게시 ${NEWS.filter(n=>n.status==='게시').length} · 초안 ${NEWS.filter(n=>n.status!=='게시').length}`:'';
-  $('news-alist').innerHTML=list.length?list.map(n=>`<div class="acard" id="nrow-${n.row}">
-    <div class="ahead"><div class="atitle"><span class="sec ${SEC_CLASS[n.section]||'s-life'}">${esc(n.section)}</span> ${badge(n.status)} <span class="adate">${esc(n.date)}</span>
-      <div style="font-weight:600;margin-top:4px">${esc(n.title)}</div></div></div>
-    <div class="abody" style="max-height:120px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent)">${esc(n.body)}</div>
+  $('news-alist').innerHTML=list.length?list.map(n=>{ const q=questOf(n); return `<div class="acard" id="nrow-${n.row}">
+    <div class="ahead"><div class="atitle"><span class="sec ${SEC_CLASS[n.section]||'s-life'}">${esc(n.section)}</span> ${badge(n.status)} ${q?`<span class="qstat ${QSTATUS_CLASS[q.q_status]||'qs-open'}">${esc(q.q_status)}</span>`:''} <span class="adate">${esc(n.date)}</span>
+      <div style="font-weight:600;margin-top:4px">${esc(n.title)}</div>${q?`<div class="qmeta">${q.q_type?`<span><b>종류</b>${esc(q.q_type)}</span>`:''}${q.q_rank?`<span><b>등급</b>${esc(q.q_rank)}</span>`:''}${q.q_client?`<span><b>의뢰인</b>${esc(q.q_client)}</span>`:''}${q.q_reward?`<span><b>보상</b>${esc(q.q_reward)}</span>`:''}</div>`:''}</div></div>
+    <div class="abody" style="max-height:120px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent)">${esc(q?q.rest:n.body)}</div>
     <div class="abtns">
       ${n.status==='게시'?`<button class="abtn" data-nact="status" data-row="${n.row}" data-s="초안">내리기 (초안으로)</button>`:`<button class="abtn primary" data-nact="status" data-row="${n.row}" data-s="게시">게시</button>`}
       ${n.section==='추적 중'?`<button class="abtn" data-nact="resolve" data-row="${n.row}">✓ 해결됨으로</button>`:''}
+      ${q&&q.q_status==='모집 중'?`<button class="abtn" data-nact="qstatus" data-row="${n.row}" data-s="진행 중">▶ 진행 중으로</button>`:''}
+      ${q&&q.q_status==='진행 중'?`<button class="abtn" data-nact="qstatus" data-row="${n.row}" data-s="완료">✓ 완료로</button>`:''}
+      ${q&&q.q_status==='완료'?`<button class="abtn" data-nact="qstatus" data-row="${n.row}" data-s="모집 중">다시 모집</button>`:''}
       <button class="abtn" data-nact="edit" data-row="${n.row}">✎ 수정</button>
       <button class="abtn danger" data-nact="delete" data-row="${n.row}">삭제</button>
-    </div></div>`).join(''):'<div class="empty">기사가 없어요. 위에서 첫 기사를 써보세요.</div>';
+    </div></div>`; }).join(''):'<div class="empty">기사가 없어요. 위에서 첫 기사를 써보세요.</div>';
 }
 const nf=$('news-form');
-function newsReset(){ nf.reset(); nf.elements.row.value=''; nf.elements.date.value=today(); $('news-form-title').textContent='새 기사'; $('news-save').textContent='올리기'; $('news-cancel').style.display='none'; $('news-msg').textContent=''; }
+function syncQform(){ $('qform').style.display=nf.elements.section.value==='의뢰'?'block':'none'; }
+nf.elements.section.addEventListener('change', syncQform);
+function newsReset(){ nf.reset(); nf.elements.row.value=''; nf.elements.date.value=today(); $('news-form-title').textContent='새 기사'; $('news-save').textContent='올리기'; $('news-cancel').style.display='none'; $('news-msg').textContent=''; syncQform(); }
 nf.addEventListener('submit', async e=>{
   e.preventDefault(); const f=Object.fromEntries(new FormData(nf).entries()); const row=+f.row; delete f.row;
+  if(f.section==='의뢰'){ f.body=questLine(f)+'\n'+String(f.body||'').replace(/^\[의뢰\][^\n]*\n?/,''); }   // 의뢰 정보를 본문 첫 줄에
+  for(const [k] of QKEYS) delete f[k];
   const msg=$('news-msg'); msg.className='msg'; msg.textContent='저장 중…';
   const d=await api(row?{action:'news_update',row,fields:f}:{action:'news_add',fields:f}).catch(()=>({ok:false,error:'net'}));
   if(d.ok){ msg.className='msg ok'; msg.textContent=row?'✓ 수정했어요':'✓ 올렸어요'; newsReset(); loadNews(); }
@@ -285,9 +317,10 @@ $('news-reload').addEventListener('click', loadNews);
 $('ns-chips').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if(!b) return; [...e.currentTarget.children].forEach(x=>x.classList.remove('on')); b.classList.add('on'); nsF=b.dataset.s; renderNews(); });
 $('news-alist').addEventListener('click', async e=>{
   const b=e.target.closest('button[data-nact]'); if(!b) return; const row=+b.dataset.row, act=b.dataset.nact; const n=NEWS.find(x=>x.row===row); if(!n) return;
-  if(act==='edit'){ for(const k of ['date','section','title','body','status']) nf.elements[k].value=n[k]||''; nf.elements.row.value=row; $('news-form-title').textContent='기사 수정'; $('news-save').textContent='수정 저장'; $('news-cancel').style.display='inline-block'; nf.scrollIntoView({behavior:'smooth'}); return; }
+  if(act==='edit'){ for(const k of ['date','section','title','body','status']) nf.elements[k].value=n[k]||''; const q=questOf(n); if(q){ for(const [k] of QKEYS) nf.elements[k].value=q[k]||nf.elements[k].value; nf.elements.body.value=q.rest; } syncQform(); nf.elements.row.value=row; $('news-form-title').textContent='기사 수정'; $('news-save').textContent='수정 저장'; $('news-cancel').style.display='inline-block'; nf.scrollIntoView({behavior:'smooth'}); return; }
   if(act==='delete'){ if(!confirm(`「${n.title}」 기사를 지울까요?`)) return; }
-  const body=act==='status'?{action:'news_status',row,status:b.dataset.s}:act==='resolve'?{action:'news_update',row,fields:{section:'해결'}}:{action:'news_delete',row};
+  let qbody=null; if(act==='qstatus'){ const q=questOf(n); q.q_status=b.dataset.s; qbody=questLine(q)+'\n'+q.rest; }
+  const body=act==='status'?{action:'news_status',row,status:b.dataset.s}:act==='resolve'?{action:'news_update',row,fields:{section:'해결'}}:act==='qstatus'?{action:'news_update',row,fields:{body:qbody}}:{action:'news_delete',row};
   const d=await api(body).catch(()=>({ok:false,error:'net'}));
   if(d.ok) loadNews(); else alert('실패: '+d.error);
 });
@@ -306,6 +339,6 @@ try{ const k = sessionStorage.getItem('dalbit-admin-key'); if(k) login(k); }catc
 
   </div>
 </main>
-<script src="site.js?v=20260925c" defer></script>
+<script src="site.js?v=20260925f" defer></script>
 </body>
 </html>

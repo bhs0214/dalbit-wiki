@@ -75,6 +75,22 @@ mark{background:var(--tag-yellow);color:var(--tag-yellow-t);padding:0 .2em;borde
 .s-open{background:#e8deee;color:#412454}
 .s-done{background:var(--tag-gray);color:var(--tag-gray-t)}
 .s-notice{background:var(--tag-gray);color:var(--tag-gray-t)}
+.s-quest{background:#e6dcc8;color:#4a3410}
+html[data-theme=dark] .s-quest{background:#5c4a2a;color:#f0e2c4}
+@media (prefers-color-scheme:dark){ html:not([data-theme=light]) .s-quest{background:#5c4a2a;color:#f0e2c4} }
+/* 의뢰 */
+.cases.quests{border-left:3px solid var(--orange)}
+.cases-head small{font-weight:400;color:var(--text3);margin-left:6px;font-size:12.5px}
+.qtag{display:inline-block;font-size:11.5px;font-weight:600;color:var(--text2);margin-right:8px;white-space:nowrap}
+.qstat{display:inline-block;padding:1px 8px;border-radius:3px;font-size:11.5px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.qs-open{background:var(--tag-green);color:var(--tag-green-t)}
+.qs-going{background:var(--tag-yellow);color:var(--tag-yellow-t)}
+.qs-done{background:var(--tag-gray);color:var(--tag-gray-t)}
+.qmeta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;margin:-2px 0 8px;color:var(--text2)}
+.qmeta b{font-weight:600;color:var(--text3);margin-right:5px}
+.news.quest{border-left:3px solid var(--orange)}
+.qform{background:var(--callout);border-radius:6px;padding:10px 12px;margin:0 0 12px}
+.qform .row2{margin-bottom:0}
 html[data-theme=dark] .s-feat{background:#28456c;color:#cfe0f5}
 html[data-theme=dark] .s-open{background:#492f64;color:#e4d4f4}
 @media (prefers-color-scheme:dark){ html:not([data-theme=light]) .s-feat{background:#28456c;color:#cfe0f5} html:not([data-theme=light]) .s-open{background:#492f64;color:#e4d4f4} }

@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260925c">
+<link rel="stylesheet" href="style.css?v=20260925f">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -43,6 +43,11 @@
     <article class="doc ">
 <p>가이아 대륙에서 벌어지는 일들. 진지한 것도, 아닌 것도 함께 싣습니다. <b>매주 한 호</b>씩 나옵니다.</p>
 
+<div id="quest-board" class="cases quests" style="display:none">
+  <div class="cases-head">📜 의뢰판 — 지금 받을 수 있는 일 <small>맡고 싶으면 방에서 말해주세요</small></div>
+  <div id="quest-list"></div>
+</div>
+
 <div id="open-cases" class="cases" style="display:none">
   <div class="cases-head">🔍 추적 중 — 아직 풀리지 않은 일들</div>
   <div id="case-list"></div>
@@ -52,6 +57,7 @@
   <button class="chip on" data-s="전체">전체</button>
   <button class="chip" data-s="특종">특종</button>
   <button class="chip" data-s="속보">속보</button>
+  <button class="chip" data-s="의뢰">의뢰</button>
   <button class="chip" data-s="기획">기획</button>
   <button class="chip" data-s="생활">생활</button>
   <button class="chip" data-s="추적 중">추적 중</button>
@@ -65,7 +71,17 @@
 
 <script>
 const APPLY_URL = 'https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5jCg_V0ncwXQgCrxczcI5Qnzvo0DJDGEv1umaStNCaBTgAf7/exec';
-const SEC_CLASS = {'특종':'s-top','속보':'s-flash','기획':'s-feat','생활':'s-life','추적 중':'s-open','해결':'s-done','공지':'s-notice'};
+const SEC_CLASS = {'특종':'s-top','속보':'s-flash','기획':'s-feat','생활':'s-life','추적 중':'s-open','해결':'s-done','공지':'s-notice','의뢰':'s-quest'};
+// 의뢰: 본문 첫 줄 "[의뢰] 종류=토벌; 등급=B; 의뢰인=중앙; 보상=…; 상태=모집 중" 을 읽어 표로 보여줌 (시트 열은 그대로)
+function questOf(n){
+  if(n.section!=='의뢰') return null;
+  const m=/^\[의뢰\]\s*([^\n]*)\n?([\s\S]*)$/.exec((n.body||'').replace(/\r/g,''));
+  const q={type:'',rank:'',client:'',reward:'',status:'모집 중',rest:n.body||''};
+  if(!m) return q;
+  m[1].split(';').forEach(p=>{ const [k,...v]=p.split('='); const val=v.join('=').trim(); const key={종류:'type',등급:'rank',의뢰인:'client',보상:'reward',상태:'status'}[(k||'').trim()]; if(key&&val) q[key]=val; });
+  q.rest=m[2]; return q;
+}
+const QSTATUS_CLASS={'모집 중':'qs-open','진행 중':'qs-going','완료':'qs-done'};
 let NEWS=[], secF='전체', LIMIT=20;
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 // 본문: 빈 줄 = 문단, "> " = 인용, "## " = 소제목, "---" = 구분선, **굵게**, *기울임*, ==형광펜==
@@ -86,11 +102,13 @@ function dateK(d){ const m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(d||''); return m?
 const FIRST_ISSUE='2026-01-01'; let ISSUE={};   // 2026년 기사부터 호를 매김 (첫 날짜 = 제1호)
 function buildIssues(){ ISSUE={}; [...new Set(NEWS.map(n=>n.date).filter(d=>d>=FIRST_ISSUE))].sort().forEach((d,i)=>ISSUE[d]=i+1); }
 const issueLabel=d=>ISSUE[d]?`제${ISSUE[d]}호`:'지난 신문';
-const SEC_ORDER={'특종':0,'속보':1,'추적 중':2,'해결':3,'기획':4,'생활':5,'공지':6};
+const SEC_ORDER={'특종':0,'속보':1,'추적 중':2,'의뢰':3,'해결':4,'기획':5,'생활':6,'공지':7};
 function article(n){
   const sc=SEC_CLASS[n.section]||'s-life';
-  return `<article class="news"><div class="news-head"><span class="sec ${sc}">${esc(n.section||'기사')}</span><span class="ndate">${issueLabel(n.date)} · ${dateK(n.date)}</span></div>
-    <h3 class="ntitle">${esc(n.title)}</h3><div class="nbody">${fmt(n.body)}</div></article>`;
+  const q=questOf(n);
+  const meta=q?`<div class="qmeta">${q.type?`<span><b>종류</b>${esc(q.type)}</span>`:''}${q.rank?`<span><b>등급</b>${esc(q.rank)}</span>`:''}${q.client?`<span><b>의뢰인</b>${esc(q.client)}</span>`:''}${q.reward?`<span><b>보상</b>${esc(q.reward)}</span>`:''}<span class="qstat ${QSTATUS_CLASS[q.status]||'qs-open'}">${esc(q.status)}</span></div>`:'';
+  return `<article class="news${q?' quest':''}"><div class="news-head"><span class="sec ${sc}">${esc(n.section||'기사')}</span><span class="ndate">${issueLabel(n.date)} · ${dateK(n.date)}</span></div>
+    <h3 class="ntitle">${esc(n.title)}</h3>${meta}<div class="nbody">${fmt(q?q.rest:n.body)}</div></article>`;
 }
 function renderNews(){
   const q=(document.getElementById('nq').value||'').trim().toLowerCase();
@@ -113,6 +131,11 @@ function renderNews(){
   const box=document.getElementById('open-cases');
   if(open.length){ box.style.display='block'; document.getElementById('case-list').innerHTML=open.map(n=>`<div class="case"><b>${esc(n.title)}</b><span class="ndate">${dateK(n.date)}</span></div>`).join(''); }
   else box.style.display='none';
+  // 의뢰판: 완료되지 않은 의뢰만
+  const quests=NEWS.map(n=>[n,questOf(n)]).filter(([n,q])=>q&&q.status!=='완료');
+  const qb=document.getElementById('quest-board');
+  if(quests.length){ qb.style.display='block'; document.getElementById('quest-list').innerHTML=quests.map(([n,q])=>`<div class="case"><span><span class="qtag">${esc(q.type||'의뢰')}${q.rank?' · '+esc(q.rank):''}</span><b>${esc(n.title)}</b></span><span class="qstat ${QSTATUS_CLASS[q.status]||'qs-open'}">${esc(q.status)}</span></div>`).join(''); }
+  else qb.style.display='none';
 }
 async function loadNews(){
   try{ const r=await fetch(APPLY_URL+'?news=1&t='+Date.now(),{cache:'no-store'}); NEWS=await r.json();
@@ -132,6 +155,6 @@ loadNews();
 <div class="pager"><a class="prev" href="play.html"><small>‹ 이전</small>🎭 역극은 이렇게</a><a class="next" href="world.html"><small>다음 ›</small>📕 이 세계는?</a></div>
   </div>
 </main>
-<script src="site.js?v=20260925c" defer></script>
+<script src="site.js?v=20260925f" defer></script>
 </body>
 </html>

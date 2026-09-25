@@ -18,7 +18,7 @@
 <script>try{var t=localStorage.getItem('dalbit-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="image" href="cover.jpg">
-<link rel="stylesheet" href="style.css?v=20260925c">
+<link rel="stylesheet" href="style.css?v=20260925f">
 <!-- 웹 글꼴(Pretendard)은 PC 폭에서만 내려받음. 폰은 기기 기본 한글 글꼴(Apple SD Gothic Neo / Noto Sans CJK)을 써서 첫 화면이 빠름 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="(min-width: 901px)">
 </head>
@@ -55,7 +55,7 @@
 <h2>🗺 가이아 대륙</h2>
 <p><img alt="가이아 대륙 지도" src="map.jpg" loading="lazy" decoding="async" width="1000" height="751"></p>
 <hr>
-<div class="teaser" id="teaser" style="display:none"><div class="th"><span>🗞️ 이번 주 중앙 영물 신문</span><a href="news.html">전체 보기 →</a></div><div id="teaser-list"></div></div><script>(async()=>{try{const r=await fetch("https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5jCg_V0ncwXQgCrxczcI5Qnzvo0DJDGEv1umaStNCaBTgAf7/exec?news=1&t="+Date.now(),{cache:"no-store"});const nd=d=>{d=String(d||"").trim();if(/^\d{4}-\d{2}-\d{2}/.test(d))return d.slice(0,10);const t=new Date(d);return isNaN(t)?d:t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");};const n=(await r.json()).map(x=>(x.date=nd(x.date),x)).sort((a,b)=>(b.date||"").localeCompare(a.date||""));const open=n.filter(x=>x.section==="추적 중").slice(0,2), latest=n.filter(x=>x.section!=="추적 중").slice(0,3); const pick=[...open,...latest]; if(!pick.length)return;const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));const sc={"특종":"s-top","속보":"s-flash","기획":"s-feat","생활":"s-life","추적 중":"s-open","해결":"s-done","공지":"s-notice"};document.getElementById("teaser-list").innerHTML=pick.map(x=>`<div class="ti"><span class="sec ${sc[x.section]||"s-life"}">${esc(x.section)}</span><a href="news.html">${esc(x.title)}</a></div>`).join("");document.getElementById("teaser").style.display="block";}catch(e){}})();</script><h2>📖 어디부터 읽을까요</h2>
+<div class="teaser" id="teaser" style="display:none"><div class="th"><span>🗞️ 이번 주 중앙 영물 신문</span><a href="news.html">전체 보기 →</a></div><div id="teaser-list"></div></div><script>(async()=>{try{const r=await fetch("https://script.google.com/macros/s/AKfycbyGJo19be26sFv4Xb6d5jCg_V0ncwXQgCrxczcI5Qnzvo0DJDGEv1umaStNCaBTgAf7/exec?news=1&t="+Date.now(),{cache:"no-store"});const nd=d=>{d=String(d||"").trim();if(/^\d{4}-\d{2}-\d{2}/.test(d))return d.slice(0,10);const t=new Date(d);return isNaN(t)?d:t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");};const n=(await r.json()).map(x=>(x.date=nd(x.date),x)).sort((a,b)=>(b.date||"").localeCompare(a.date||""));const isQ=x=>x.section==="의뢰"&&!/상태=완료/.test(String(x.body||"").split("\n")[0]);const quests=n.filter(isQ).slice(0,2), open=n.filter(x=>x.section==="추적 중").slice(0,2), latest=n.filter(x=>x.section!=="추적 중"&&x.section!=="의뢰").slice(0,3); const pick=[...quests,...open,...latest]; if(!pick.length)return;const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));const sc={"특종":"s-top","속보":"s-flash","기획":"s-feat","생활":"s-life","추적 중":"s-open","해결":"s-done","공지":"s-notice","의뢰":"s-quest"};document.getElementById("teaser-list").innerHTML=pick.map(x=>`<div class="ti"><span class="sec ${sc[x.section]||"s-life"}">${esc(x.section)}</span><a href="news.html">${esc(x.title)}</a></div>`).join("");document.getElementById("teaser").style.display="block";}catch(e){}})();</script><h2>📖 어디부터 읽을까요</h2>
 <h3>바로 시작하고 싶다면</h3>
 <div class="quote"><p><a class="xl" href="make.html">✍️ 캐릭터 만들기</a> 한 페이지만 읽으시면 됩니다. 샘플 캐릭터도 있어요.<br class="sb"> 만들고 나면 <a class="xl" href="play.html">🎭 역극은 이렇게 합니다</a> — 카카오톡에서 어떻게 노는지.</p></div>
 <h3>누가 있는지 보고 싶다면</h3>
@@ -68,6 +68,6 @@
 <div class="pager"><span class="sp"></span><a class="next" href="make.html"><small>다음 ›</small>✍️ 캐릭터 만들기</a></div>
   </div>
 </main>
-<script src="site.js?v=20260925c" defer></script>
+<script src="site.js?v=20260925f" defer></script>
 </body>
 </html>
